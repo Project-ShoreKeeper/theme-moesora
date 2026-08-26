@@ -1060,12 +1060,35 @@ do ->
 
   spawn = (initial) ->
     if bg == 'universe'
+      isMeteor = Math.random() < 0.07
+      sp = if isMeteor then Math.random() * 3.2 + 2.8 else Math.random() * 1.0 + 0.4
+      angle = 0.68 + (Math.random() - 0.5) * 0.18
+      vx = -Math.cos(angle) * sp
+      vy = Math.sin(angle) * sp
+      x = 0
+      y = 0
+      if initial
+        x = Math.random() * (W + 200) - 50
+        y = Math.random() * (H + 100) - 50
+      else
+        if Math.random() < 0.65
+          x = Math.random() * (W + 120)
+          y = -15
+        else
+          x = W + 15
+          y = Math.random() * (H * 0.8)
       return {
-        x: Math.random() * W
-        y: Math.random() * H
-        r: Math.random() * 1.4 + 0.3
+        x: x
+        y: y
+        vx: vx
+        vy: vy
+        sp: sp
+        r: if isMeteor then Math.random() * 1.2 + 1.2 else Math.random() * 1.2 + 0.4
+        len: if isMeteor then Math.random() * 32 + 18 else Math.random() * 10 + 3
         a: Math.random() * 6.28
-        tw: Math.random() * 0.04 + 0.01
+        tw: Math.random() * 0.04 + 0.015
+        hue: Math.random()
+        isMeteor: isMeteor
       }
     {
       x: Math.random() * W
@@ -1079,7 +1102,7 @@ do ->
 
   initParts = ->
     parts = []
-    n = if bg == 'universe' then 140 else 60
+    n = if bg == 'universe' then 100 else 60
     i = 0
     while i < n
       parts.push spawn(true)
@@ -1097,12 +1120,45 @@ do ->
       i = 0
       while i < parts.length
         p = parts[i]
+        p.x += p.vx
+        p.y += p.vy
         p.a += p.tw
         al = (Math.sin(p.a) + 1) / 2
+        opacity = 0.25 + al * 0.75
+        tailX = p.x - (p.vx / p.sp) * p.len
+        tailY = p.y - (p.vy / p.sp) * p.len
+        ctx.save()
+        if p.len > 5
+          grad = ctx.createLinearGradient(tailX, tailY, p.x, p.y)
+          trailColor = if dk
+            (if p.hue < 0.55 then 'rgba(56,189,248,' else 'rgba(192,132,252,')
+          else
+            (if p.hue < 0.55 then 'rgba(99,102,241,' else 'rgba(168,85,247,')
+          grad.addColorStop 0, trailColor + '0)'
+          grad.addColorStop 1, trailColor + (opacity * 0.85) + ')'
+          ctx.strokeStyle = grad
+          ctx.lineWidth = p.r * 0.9
+          ctx.lineCap = 'round'
+          ctx.beginPath()
+          ctx.moveTo tailX, tailY
+          ctx.lineTo p.x, p.y
+          ctx.stroke()
         ctx.beginPath()
-        ctx.fillStyle = (if dk then 'rgba(255,255,255,' else 'rgba(120,100,190,') + (0.2 + al * 0.8) + ')'
+        headColor = if dk
+          (if p.hue < 0.4 then 'rgba(255,255,255,' else if p.hue < 0.75 then 'rgba(186,230,253,' else 'rgba(233,213,255,')
+        else
+          (if p.hue < 0.4 then 'rgba(99,102,241,' else 'rgba(120,100,190,')
+        ctx.fillStyle = headColor + opacity + ')'
         ctx.arc p.x, p.y, p.r, 0, 6.2832
         ctx.fill()
+        if p.r > 1.2 and opacity > 0.6
+          ctx.beginPath()
+          ctx.fillStyle = (if dk then 'rgba(56,189,248,' else 'rgba(129,140,248,') + (opacity * 0.25) + ')'
+          ctx.arc p.x, p.y, p.r * 2.2, 0, 6.2832
+          ctx.fill()
+        ctx.restore()
+        if p.x < -40 or p.y > H + 40
+          parts[i] = spawn(false)
         i++
     else
       i = 0
