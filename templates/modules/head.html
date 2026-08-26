@@ -252,6 +252,24 @@
     }
     .dark .moe-stp-btn { color: #f1f5f9; }
     .moe-stp-btn:hover { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
+    .moe-stp-btn-group {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .moe-stp-prev, .moe-stp-next {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(56, 189, 248, 0.08);
+      color: #0284c7; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s ease; padding: 0;
+    }
+    .dark .moe-stp-prev, .dark .moe-stp-next {
+      color: #38bdf8; background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.3);
+    }
+    .moe-stp-prev:hover, .moe-stp-next:hover {
+      transform: scale(1.1); background: #38bdf8 !important;
+      color: #ffffff !important; border-color: #38bdf8 !important;
+    }
     .moe-stp-play {
       width: 34px; height: 34px; border-radius: 50%;
       background: linear-gradient(135deg, #38bdf8, #6366f1) !important;

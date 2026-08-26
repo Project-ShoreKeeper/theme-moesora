@@ -94,10 +94,18 @@
         </div>
         <!-- Controls row -->
         <div class="moe-stp-ctrls">
-          <button type="button" class="moe-stp-btn moe-stp-play" id="moe-stp-playbtn" aria-label="Play/Pause">
-            <svg class="moe-stp-ico-play" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-            <svg class="moe-stp-ico-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-          </button>
+          <div class="moe-stp-btn-group">
+            <button type="button" class="moe-stp-btn moe-stp-prev" id="moe-stp-prevbtn" aria-label="Previous Track" title="Previous Track">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+            </button>
+            <button type="button" class="moe-stp-btn moe-stp-play" id="moe-stp-playbtn" aria-label="Play/Pause">
+              <svg class="moe-stp-ico-play" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+              <svg class="moe-stp-ico-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button type="button" class="moe-stp-btn moe-stp-next" id="moe-stp-nextbtn" aria-label="Next Track" title="Next Track">
+              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+          </div>
           <div class="moe-stp-vol-wrap">
             <button type="button" class="moe-stp-btn moe-stp-mute" id="moe-stp-mutebtn" aria-label="Mute/Unmute">
               <svg class="moe-stp-ico-vol" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
@@ -108,7 +116,7 @@
         </div>
       </div>
       <!-- Native HTML5 audio stream pointing directly to local theme assets -->
-      <audio id="moe-native-audio" th:src="@{/assets/audio/astrum-unicum.m4a}" preload="metadata" loop></audio>
+      <audio id="moe-native-audio" th:src="@{/assets/audio/the-beginning-of-our-story.m4a}" preload="metadata"></audio>
     </div>
     <!-- Floating FAB -->
     <button class="moe-music-fab" id="moe-music-fab" type="button" aria-label="Music Player">
@@ -126,8 +134,33 @@
     var audio = document.getElementById("moe-native-audio");
     if (!floatWrap || !fab || !audio) return;
 
+    var playlist = [
+      {
+        title: "The Beginning of Our Story",
+        artist: "Shorekeeper Theme · Weijun Chen / Vanguard Sound",
+        src: "/themes/moesora/assets/audio/the-beginning-of-our-story.m4a"
+      },
+      {
+        title: "Astrum Unicum",
+        artist: "Shorekeeper Theme · Vanguard Sound",
+        src: "/themes/moesora/assets/audio/astrum-unicum.m4a"
+      }
+    ];
+
+    var currentTrackIdx = 0;
+    try {
+      var savedIdx = localStorage.getItem("shorekeeper_player_track");
+      if (savedIdx !== null && !isNaN(parseInt(savedIdx, 10))) {
+        currentTrackIdx = (parseInt(savedIdx, 10) + playlist.length) % playlist.length;
+      }
+    } catch(e) {}
+
     var card = document.getElementById("moe-stp-card");
+    var titleEl = card ? card.querySelector(".moe-stp-title") : null;
+    var artistEl = card ? card.querySelector(".moe-stp-artist") : null;
     var playBtn = document.getElementById("moe-stp-playbtn");
+    var prevBtn = document.getElementById("moe-stp-prevbtn");
+    var nextBtn = document.getElementById("moe-stp-nextbtn");
     var icoPlay = playBtn && playBtn.querySelector(".moe-stp-ico-play");
     var icoPause = playBtn && playBtn.querySelector(".moe-stp-ico-pause");
     var seekBar = document.getElementById("moe-stp-seek");
@@ -162,6 +195,26 @@
       if (icoPause) icoPause.style.display = isPlaying ? "block" : "none";
     }
 
+    function loadTrack(idx, autoPlay) {
+      currentTrackIdx = (idx + playlist.length) % playlist.length;
+      var track = playlist[currentTrackIdx];
+      if (titleEl) titleEl.textContent = track.title;
+      if (artistEl) artistEl.textContent = track.artist;
+      audio.src = track.src;
+      audio.load();
+      if (fill) fill.style.width = "0%";
+      setRingProgress(0);
+      if (curTime) curTime.textContent = "0:00";
+      try {
+        localStorage.setItem("shorekeeper_player_track", String(currentTrackIdx));
+      } catch(e) {}
+      if (autoPlay) {
+        audio.play().then(function(){ updateState(true); }).catch(function(){});
+      }
+    }
+
+    loadTrack(currentTrackIdx, false);
+
     function togglePlay() {
       if (audio.paused) {
         audio.play().then(function(){ updateState(true); }).catch(function(){});
@@ -170,6 +223,20 @@
         updateState(false);
       }
     }
+
+    if (prevBtn) prevBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      loadTrack(currentTrackIdx - 1, true);
+    });
+
+    if (nextBtn) nextBtn.addEventListener("click", function(e) {
+      e.stopPropagation();
+      loadTrack(currentTrackIdx + 1, true);
+    });
+
+    audio.addEventListener("ended", function() {
+      loadTrack(currentTrackIdx + 1, true);
+    });
 
     fab.addEventListener("click", function(e) {
       e.stopPropagation();
