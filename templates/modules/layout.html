@@ -9,9 +9,9 @@
        th:attr="data-bg=${theme.config.basic.site_bg},data-mode=${theme.config.basic?.site_bg_mode}"
        th:style="${theme.config.basic?.site_bg_mode == 'not_home' and isHome == true} ? 'display:none' : ''"></div>
 
-  <!-- 少女祈祷中... 加载层 -->
+  <!-- Starlight murmurs across the shore... 加载层 -->
   <div id="moesora-loading"
-       th:text="${theme.config.loading?.loading_text} ?: '少女祈祷中...'">少女祈祷中...</div>
+       th:text="${theme.config.loading?.loading_text} ?: 'Starlight murmurs across the shore...'">Starlight murmurs across the shore...</div>
 
   <!-- 顶部导航 -->
   <div th:replace="~{modules/navbar :: navbar}"></div>
@@ -29,7 +29,7 @@
 
   <!-- 三列主体：左侧栏 / 正文 / 右侧栏（模块化布局：按后台配置的列表渲染，未配置则回退默认顺序） -->
   <div class="moe-layout"
-       th:classappend="${(theme.config.basic?.sidebar_swap ? ' is-swapped' : '') + ' layout-' + (theme.config.basic?.sidebar_column ?: 'three') + ((theme.config.sidebar?.mobile_modules != null and !#lists.isEmpty(theme.config.sidebar.mobile_modules)) ? ' has-mobile-sidebar' : '')}">
+       th:classappend="${(theme.config.basic?.sidebar_swap == true ? ' is-swapped' : '') + ' layout-' + (theme.config.basic?.sidebar_column ?: 'three') + ((theme.config.sidebar?.mobile_modules != null and !#lists.isEmpty(theme.config.sidebar.mobile_modules)) ? ' has-mobile-sidebar' : '')}">
     <aside class="moe-sidebar moe-sidebar-left"
            th:if="${(theme.config.basic?.sidebar_column ?: 'three') != 'right'}"
            th:with="lm=${theme.config.sidebar?.left_modules}">
@@ -72,7 +72,7 @@
                  fixed="false" mini="false" autoplay="false" order="list" preload="none"
                  list-folded="true" list-max-height="200px"></meting-js>
     </div>
-    <button class="moe-music-fab" id="moe-music-fab" type="button" aria-label="音乐播放器">
+    <button class="moe-music-fab" id="moe-music-fab" type="button" aria-label="Music Player">
       <svg class="moe-music-ring" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
         <circle class="moe-music-track" cx="24" cy="24" r="21"/>
         <circle class="moe-music-prog" cx="24" cy="24" r="21"/>
@@ -115,7 +115,7 @@
   <div th:replace="~{modules/libs :: libs}"></div>
 
   <!-- 回到顶部（带滚动进度环） -->
-  <button id="moe-totop" class="moe-totop" type="button" aria-label="回到顶部">
+  <button id="moe-totop" class="moe-totop" type="button" aria-label="Back to Top">
     <svg class="moe-totop-ring" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
       <circle class="moe-totop-track" cx="24" cy="24" r="21"/>
       <circle class="moe-totop-prog" cx="24" cy="24" r="21"/>

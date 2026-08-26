@@ -1226,8 +1226,8 @@ html.dark .moe-cmt-tool:hover{background:#3a2f3a}
 .moe-wish-tab.is-on{background:var(--moe-theme);color:#fff;border-color:var(--moe-theme);box-shadow:0 4px 12px color-mix(in srgb,var(--moe-theme) 33%,transparent)}
 /* 卡片墙：JS 散落瀑布（绝对定位） */
 .moe-wish-wall{position:relative;margin-top:24px;min-height:50px}
-.moe-wish-card{width:100%;margin:0 0 14px;padding:13px 15px 12px;border-radius:15px;color:#3f3f46;box-shadow:0 6px 18px rgba(0,0,0,.10);transition:transform .22s ease,box-shadow .22s ease;will-change:transform;cursor:pointer;min-height:152px;display:flex;flex-direction:column}
-.moe-wish-card:hover{transform:translateY(-4px)!important;box-shadow:0 16px 36px rgba(0,0,0,.22);z-index:9999!important}
+.moe-wish-card{width:100%;margin:0;padding:13px 15px 12px;border-radius:15px;color:#3f3f46;box-shadow:0 6px 18px rgba(0,0,0,.10);transition:transform .25s ease,box-shadow .25s ease;will-change:transform;cursor:pointer;min-height:152px;display:flex;flex-direction:column}
+.moe-wish-card:hover{transform:translateY(-8px) scale(1.05) rotate(0deg)!important;box-shadow:0 20px 40px rgba(0,0,0,.24);z-index:9999!important}
 .moe-wish-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .moe-wish-dots{display:inline-flex;gap:6px}
 .moe-wish-dots i{width:11px;height:11px;border-radius:50%;display:block}

@@ -1,7 +1,7 @@
 /*!
- * Moesora 内置评论（直接调用 Halo 公开评论 API）
- * 游客填 昵称(输QQ自动取昵称) + 手机号 + 邮箱 即可评论；头像用 cravatar；表情走 CDN；可贴图（图床/内嵌）。
- * 需在 Halo 后台「评论设置」开启允许匿名/自定义账号评论。可被 Pjax 重复调用（幂等）。
+ * Moesora Native Comment System (moe-comment.js) - Shorekeeper Sanctuary Edition
+ * Features: Multi-tier avatar resolver (GitHub profile / QQ avatar / Cravatar / Starlight Identicon),
+ * English localization, streamlined 3-field form, lazy emoji panel, image attachments, and glowing celestial UI.
  */
 (function () {
   "use strict";
@@ -13,7 +13,7 @@
   var EMOJI_NS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160, 161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207];
   var EMOJI_SET = {}; EMOJI_NS.forEach(function (n) { EMOJI_SET[n] = 1; });
 
-  // ---------- md5（cravatar 邮箱哈希） ----------
+  // MD5 Hash for Gravatar / Cravatar
   var md5 = (function () {
     function sa(x, y) { var l = (x & 0xffff) + (y & 0xffff); return (((x >> 16) + (y >> 16) + (l >> 16)) << 16) | (l & 0xffff); }
     function rol(n, c) { return (n << c) | (n >>> (32 - c)); }
@@ -53,14 +53,18 @@
     return function (s) { return r2h(b2r(bm(r2b(unescape(encodeURIComponent(s))), s.length * 8))); };
   })();
 
-  // ---------- 工具 ----------
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;"); }
   function getCookie(name) { var m = document.cookie.match("(?:^|; )" + name.replace(/([.$?*|{}()\[\]\\\/+^])/g, "\\$1") + "=([^;]*)"); return m ? decodeURIComponent(m[1]) : ""; }
   function timeAgo(iso) {
     if (!iso) return ""; var t = new Date(iso).getTime(); if (isNaN(t)) return "";
     var s = Math.floor((Date.now() - t) / 1000);
-    if (s < 60) return "刚刚"; if (s < 3600) return Math.floor(s / 60) + " 分钟前"; if (s < 86400) return Math.floor(s / 3600) + " 小时前"; if (s < 2592000) return Math.floor(s / 86400) + " 天前";
-    var d = new Date(t); function p(n) { return (n < 10 ? "0" : "") + n; } return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
+    if (s < 60) return "just now"; 
+    if (s < 3600) return Math.floor(s / 60) + "m ago"; 
+    if (s < 86400) return Math.floor(s / 3600) + "h ago"; 
+    if (s < 2592000) return Math.floor(s / 86400) + "d ago";
+    var d = new Date(t); 
+    var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return months[d.getMonth()] + " " + d.getDate() + ", " + d.getFullYear();
   }
   function insertAtCursor(ta, text) {
     if (!ta) return;
@@ -68,10 +72,10 @@
     ta.value = ta.value.slice(0, s) + text + ta.value.slice(e);
     var pos = s + text.length; try { ta.selectionStart = ta.selectionEnd = pos; } catch (err) {} ta.focus();
   }
-  // 默认头像：客户端随机生成的对称色块（identicon），随机色相，不依赖网络，每次加载随机一个
+
   var DEFAULT_AVATAR = (function () {
-    var hue = Math.floor(Math.random() * 360);
-    var fg = "hsl(" + hue + ",58%,56%)", bg = "hsl(" + hue + ",52%,93%)";
+    var hue = 199;
+    var fg = "hsl(" + hue + ",75%,60%)", bg = "hsl(" + hue + ",60%,94%)";
     var cells = "";
     for (var y = 0; y < 5; y++) for (var x = 0; x < 3; x++) {
       if (Math.random() > 0.5) {
@@ -81,8 +85,8 @@
     }
     return "data:image/svg+xml;utf8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="24" fill="' + bg + '"/><g fill="' + fg + '">' + cells + '</g></svg>');
   })();
+
   function fixAvatars(scope) { (scope || document).querySelectorAll('img.moe-cmt-avatar,img[data-role="avatar"]').forEach(function (im) { im.onerror = function () { this.onerror = null; this.src = DEFAULT_AVATAR; }; }); }
-  // 评论里的图片点击进主题灯箱，可放大/缩小查看
   function bindLightbox(scope) {
     var root = document.getElementById("moe-comment") || document;
     (scope || root).querySelectorAll("img.moe-cmt-img").forEach(function (im) {
@@ -109,41 +113,57 @@
     reader.readAsDataURL(file);
   }
 
-  // ---------- 头像（cravatar 邮箱头像） ----------
-  function cravatarByEmail(email) { return CRAVATAR + md5(String(email || "").trim().toLowerCase()) + "?s=100&d=monsterid"; }
-  function qqAvatar(qq) { return "https://q1.qlogo.cn/g?b=qq&nk=" + encodeURIComponent(qq) + "&s=100"; }
-  function ownerDisplay(owner) {
-    var d = (owner && owner.displayName) || "";
-    var i = d.indexOf("\u2063");
-    if (i >= 0) { var q = d.slice(i + 1).replace(/\D/g, ""); return { name: d.slice(0, i), qq: /^\d{5,13}$/.test(q) ? q : "" }; }
-    return { name: d, qq: "" };
-  }
-  function qqFrom(owner) {
-    owner = owner || {}; var ann = owner.annotations || {};
-    var od = ownerDisplay(owner); if (od.qq) return od.qq;
-    if (ann.qq && /^\d{5,13}$/.test(ann.qq)) return ann.qq;
-    var m = /^(\d{5,13})@qq\.com$/i.exec(owner.name || ""); if (m) return m[1];
-    var dn = (owner.displayName || "").trim(); if (/^\d{5,13}$/.test(dn)) return dn;
+  // --- Avatar Resolvers ---
+  function githubUserFromUrl(url) {
+    if (!url) return "";
+    var m = /(?:https?:\/\/)?(?:www\.)?github\.com\/([a-zA-Z0-9_\-]+)/i.exec(url.trim());
+    if (m && m[1] && m[1].toLowerCase() !== "null") return m[1];
+    if (/^@[a-zA-Z0-9_\-]+$/.test(url.trim())) return url.trim().slice(1);
     return "";
   }
-  function avatarOf(owner) {
-    owner = owner || {}; if (owner.avatar) return owner.avatar;
-    var ann = owner.annotations || {};
-    if (ann.avatar) return ann.avatar;
-    var qq = qqFrom(owner); if (qq) return qqAvatar(qq);
-    if (ann["email-hash"]) return CRAVATAR + ann["email-hash"] + "?s=100&d=monsterid";
+  function qqFromEmail(email) {
+    if (!email) return "";
+    var m = /^(\d{5,13})@qq\.com$/i.exec(email.trim());
+    return m ? m[1] : "";
+  }
+  function qqAvatar(qq) {
+    return "https://q1.qlogo.cn/g?b=qq&nk=" + encodeURIComponent(qq) + "&s=100";
+  }
+  function cravatarByEmail(email) {
+    return CRAVATAR + md5(String(email || "").trim().toLowerCase()) + "?s=100&d=mp";
+  }
+  function avatarFor(email, website) {
+    var gh = githubUserFromUrl(website);
+    if (gh) return "https://github.com/" + encodeURIComponent(gh) + ".png";
+    var qq = qqFromEmail(email);
+    if (qq) return qqAvatar(qq);
+    if (email && email.indexOf("@") > 0) return cravatarByEmail(email);
     return DEFAULT_AVATAR;
   }
 
-  // ---------- 表情（CDN QQ 表情） ----------
+  function avatarOf(owner) {
+    owner = owner || {};
+    if (owner.avatar) return owner.avatar;
+    var ann = owner.annotations || {};
+    if (ann.avatar) return ann.avatar;
+    if (ann.website) {
+      var gh = githubUserFromUrl(ann.website);
+      if (gh) return "https://github.com/" + encodeURIComponent(gh) + ".png";
+    }
+    var qq = qqFromEmail(owner.name);
+    if (qq) return qqAvatar(qq);
+    if (owner.name && owner.name.indexOf("@") > 0) return cravatarByEmail(owner.name);
+    if (ann["email-hash"]) return CRAVATAR + ann["email-hash"] + "?s=100&d=mp";
+    return DEFAULT_AVATAR;
+  }
+
   function stickerSrc(n) { return EMOJI_BASE + n + ".gif"; }
 
-  // ---------- 正文渲染：表情 [/qqN] + markdown 图片 + 换行 ----------
   function renderContent(raw) {
     raw = String(raw == null ? "" : raw); var toks = [];
     function stash(html) { toks.push(html); return "\u0000T" + (toks.length - 1) + "\u0000"; }
     raw = raw.replace(/!\[([^\]]*)\]\(((?:https?:\/\/|data:image\/)[^\s)]+)\)/g, function (m, alt, url) { return stash('<img class="moe-cmt-img" loading="lazy" src="' + esc(url) + '" alt="' + esc(alt) + '">'); });
-    raw = raw.replace(/\[\/qq(\d+)\]/g, function (m, n) { return EMOJI_SET[n] ? stash('<img class="moe-cmt-sticker" src="' + stickerSrc(n) + '" alt="表情">') : m; });
+    raw = raw.replace(/\[\/qq(\d+)\]/g, function (m, n) { return EMOJI_SET[n] ? stash('<img class="moe-cmt-sticker" src="' + stickerSrc(n) + '" alt="Emoji">') : m; });
     var s = esc(raw).replace(/\n/g, "<br>");
     s = s.replace(/\u0000T(\d+)\u0000/g, function (m, i) { return toks[+i]; });
     return s;
@@ -161,20 +181,23 @@
   }
   function displayHtml(spec) { var raw = spec && spec.raw; if (raw != null && raw !== "") return renderContent(raw); return sanitizeHtml((spec && spec.content) || ""); }
 
-  // ---------- 网络 ----------
   function api(path, opts) {
     opts = opts || {}; var headers = opts.headers || {};
     if (opts.method && opts.method !== "GET") { headers["Content-Type"] = "application/json"; var x = getCookie("XSRF-TOKEN"); if (x) headers["X-XSRF-TOKEN"] = x; }
     return fetch(API + path, { method: opts.method || "GET", headers: headers, credentials: "same-origin", body: opts.body ? JSON.stringify(opts.body) : undefined })
-      .then(function (res) { return res.text().then(function (txt) { var data = null; try { data = txt ? JSON.parse(txt) : null; } catch (e) {} if (!res.ok) { var msg = (data && (data.detail || data.message || data.title)) || ("请求失败（HTTP " + res.status + "）"); var err = new Error(msg); err.status = res.status; throw err; } return data; }); });
+      .then(function (res) { return res.text().then(function (txt) { var data = null; try { data = txt ? JSON.parse(txt) : null; } catch (e) {} if (!res.ok) { var msg = (data && (data.detail || data.message || data.title)) || ("Request failed (HTTP " + res.status + ")"); var err = new Error(msg); err.status = res.status; throw err; } return data; }); });
   }
   function listComments(group, kind, name, page, size) { return api("/comments?group=" + group + "&version=" + VERSION + "&kind=" + kind + "&name=" + encodeURIComponent(name) + "&page=" + page + "&size=" + size); }
   function listReplies(commentName, page, size) { return api("/comments/" + encodeURIComponent(commentName) + "/reply?page=" + page + "&size=" + size); }
-  function ownerPayload(info) { var ann = {}; if (info.avatar) ann.avatar = info.avatar; if (info.qq) ann.qq = info.qq; if (info.phone) ann.phone = info.phone; var dn = info.qq ? (info.nickname + "\u2063" + info.qq) : info.nickname; return { kind: "Email", name: info.email, displayName: dn, annotations: ann }; }
+  function ownerPayload(info) { 
+    var ann = {}; 
+    if (info.website) ann.website = info.website; 
+    if (info.avatar) ann.avatar = info.avatar;
+    return { kind: "Email", name: info.email, displayName: info.nickname, annotations: ann }; 
+  }
   function createComment(group, kind, name, text, info) { return api("/comments", { method: "POST", body: { raw: text, content: renderContent(text), allowNotification: true, subjectRef: { group: group, version: VERSION, kind: kind, name: name }, owner: ownerPayload(info) } }); }
   function createReply(commentName, text, info, quoteReply) { var body = { raw: text, content: renderContent(text), allowNotification: true, owner: ownerPayload(info) }; if (quoteReply) body.quoteReply = quoteReply; return api("/comments/" + encodeURIComponent(commentName) + "/reply", { method: "POST", body: body }); }
 
-  // ---------- 图片上传（图床或内嵌） ----------
   function pickUrl(data, path) {
     if (!data) return "";
     if (path) { var v = data; path.split(".").forEach(function (k) { v = v && v[k]; }); if (typeof v === "string") return v; }
@@ -184,11 +207,10 @@
     var fd = new FormData(); fd.append(UP.field || "file", file);
     var headers = {}; if (UP.header) { var i = UP.header.indexOf(":"); if (i > 0) headers[UP.header.slice(0, i).trim()] = UP.header.slice(i + 1).trim(); }
     fetch(UP.url, { method: "POST", body: fd, headers: headers }).then(function (r) { return r.text(); })
-      .then(function (t) { var d = null; try { d = JSON.parse(t); } catch (e) {} var url = pickUrl(d, UP.resp); if (url) onOk(url); else onErr("图床未返回图片地址"); })
-      .catch(function () { onErr("图片上传失败"); });
+      .then(function (t) { var d = null; try { d = JSON.parse(t); } catch (e) {} var url = pickUrl(d, UP.resp); if (url) onOk(url); else onErr("Upload service did not return an image URL"); })
+      .catch(function () { onErr("Image upload failed"); });
   }
 
-  // ---------- 表单 ----------
   var LS = "moe-comment-author";
   function loadAuthor() { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) { return {}; } }
   function saveAuthor(a) { try { localStorage.setItem(LS, JSON.stringify(a)); } catch (e) {} }
@@ -197,22 +219,21 @@
 
   function formHtml() {
     var a = loadAuthor();
-    var av = a.qq ? qqAvatar(a.qq) : (a.email ? cravatarByEmail(a.email) : DEFAULT_AVATAR);
+    var av = avatarFor(a.email, a.website);
     return '' +
       '<div class="moe-cmt-form">' +
-        '<div class="moe-cmt-form-avatar"><img alt="头像" src="' + av + '" data-role="avatar"></div>' +
+        '<div class="moe-cmt-form-avatar"><img alt="Avatar" src="' + av + '" data-role="avatar"></div>' +
         '<div class="moe-cmt-form-main">' +
           '<div class="moe-cmt-fields">' +
-            '<input class="moe-cmt-input" data-role="nickname" type="text" maxlength="32" placeholder="昵称 *" value="' + esc(a.nickname || "") + '">' +
-            '<input class="moe-cmt-input" data-role="qq" type="text" inputmode="numeric" maxlength="13" placeholder="QQ号（选填，用于头像）" value="' + esc(a.qq || "") + '">' +
-            '<input class="moe-cmt-input" data-role="phone" type="tel" inputmode="numeric" maxlength="11" placeholder="手机号 *" value="' + esc(a.phone || "") + '">' +
-            '<input class="moe-cmt-input" data-role="email" type="email" maxlength="64" placeholder="邮箱 *" value="' + esc(a.email || "") + '">' +
+            '<input class="moe-cmt-input" data-role="nickname" type="text" maxlength="32" placeholder="Codename / Name *" value="' + esc(a.nickname || "") + '">' +
+            '<input class="moe-cmt-input" data-role="email" type="email" maxlength="64" placeholder="Email (for avatar) *" value="' + esc(a.email || "") + '">' +
+            '<input class="moe-cmt-input" data-role="website" type="text" maxlength="128" placeholder="Website / GitHub (Optional)" value="' + esc(a.website || "") + '">' +
           '</div>' +
-          '<textarea class="moe-cmt-textarea" data-role="text" rows="4" placeholder="写下你的评论…"></textarea>' +
+          '<textarea class="moe-cmt-textarea" data-role="text" rows="4" placeholder="Leave a reflection under the starlight…"></textarea>' +
           '<div class="moe-cmt-preview" data-role="preview" hidden></div>' +
           '<div class="moe-cmt-tools">' +
-            '<button type="button" class="moe-cmt-tool" data-role="emoji-btn" title="表情" aria-label="表情">' + EMOJI_ICON + '</button>' +
-            '<button type="button" class="moe-cmt-tool" data-role="img-btn" title="图片" aria-label="图片">' + IMG_ICON + '</button>' +
+            '<button type="button" class="moe-cmt-tool" data-role="emoji-btn" title="Emoji" aria-label="Emoji">' + EMOJI_ICON + '</button>' +
+            '<button type="button" class="moe-cmt-tool" data-role="img-btn" title="Image" aria-label="Image">' + IMG_ICON + '</button>' +
             '<input type="file" accept="image/*" data-role="img-input" hidden>' +
           '</div>' +
           '<div class="moe-cmt-emoji" data-role="emoji-panel" hidden></div>' +
@@ -220,37 +241,35 @@
           '<div class="moe-cmt-form-foot">' +
             '<span class="moe-cmt-tip" data-role="tip"></span>' +
             '<div class="moe-cmt-btns">' +
-              '<button type="button" class="moe-cmt-preview-btn" data-role="preview-btn">预览</button>' +
-              '<button type="button" class="moe-cmt-submit" data-role="submit">提交</button>' +
+              '<button type="button" class="moe-cmt-preview-btn" data-role="preview-btn">Preview</button>' +
+              '<button type="button" class="moe-cmt-submit" data-role="submit">Send Comment</button>' +
             '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
   }
+
   function readForm(wrap) {
     return {
       nickname: (wrap.querySelector('[data-role="nickname"]').value || "").trim(),
-      qq: (wrap.querySelector('[data-role="qq"]').value || "").trim(),
-      phone: (wrap.querySelector('[data-role="phone"]').value || "").trim(),
       email: (wrap.querySelector('[data-role="email"]').value || "").trim(),
+      website: (wrap.querySelector('[data-role="website"]') ? wrap.querySelector('[data-role="website"]').value : "").trim(),
       text: (wrap.querySelector('[data-role="text"]').value || "").trim()
     };
   }
+
   function validate(f) {
-    if (!f.nickname) return "请填写昵称";
-    if (f.qq && !/^\d{5,13}$/.test(f.qq)) return "QQ号格式不正确";
-    if (!f.phone) return "请填写手机号";
-    if (!/^1[3-9]\d{9}$/.test(f.phone)) return "手机号格式不正确";
-    if (!f.email) return "请填写邮箱";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) return "邮箱格式不正确";
-    if (!f.text) return "评论内容不能为空";
+    if (!f.nickname) return "Please enter your codename or nickname";
+    if (!f.email) return "Please provide your email address";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) return "Invalid email address format";
+    if (!f.text) return "Comment content cannot be empty";
     return "";
   }
 
   function bindForm(wrap, onSubmit) {
     var nickEl = wrap.querySelector('[data-role="nickname"]');
     var emailEl = wrap.querySelector('[data-role="email"]');
-    var phoneEl = wrap.querySelector('[data-role="phone"]');
+    var websiteEl = wrap.querySelector('[data-role="website"]');
     var avatarEl = wrap.querySelector('[data-role="avatar"]');
     var ta = wrap.querySelector('[data-role="text"]');
     var tip = wrap.querySelector('[data-role="tip"]');
@@ -262,34 +281,30 @@
     var imgBtn = wrap.querySelector('[data-role="img-btn"]');
     var imgInput = wrap.querySelector('[data-role="img-input"]');
     var attachWrap = wrap.querySelector('[data-role="attach"]');
-    var attached = [], MAX_IMG = 3, qqNum = "";
+    var attached = [], MAX_IMG = 3;
 
     function setTip(msg, cls) { tip.className = "moe-cmt-tip" + (cls ? " " + cls : ""); tip.textContent = msg || ""; }
-    function refreshAvatar() { var em = (emailEl.value || "").trim(); avatarEl.src = qqNum ? qqAvatar(qqNum) : (em ? cravatarByEmail(em) : DEFAULT_AVATAR); }
+    function refreshAvatar() { 
+      var em = (emailEl.value || "").trim(); 
+      var ws = (websiteEl ? websiteEl.value : "").trim();
+      avatarEl.src = avatarFor(em, ws); 
+    }
     fixAvatars(wrap);
 
-    // QQ 号：独立填写，仅用于生成头像（q1.qlogo.cn，免接口）；昵称由用户自己填写
-    var qqEl = wrap.querySelector('[data-role="qq"]');
-    qqNum = (qqEl && /^\d{5,13}$/.test(qqEl.value.trim())) ? qqEl.value.trim() : "";
-    if (qqEl) qqEl.addEventListener("input", function () {
-      qqEl.value = qqEl.value.replace(/\D/g, "");
-      var v = qqEl.value.trim();
-      qqNum = /^\d{5,13}$/.test(v) ? v : "";
-      refreshAvatar();
-      markValid(qqEl, v === "" || /^\d{5,13}$/.test(v));
+    emailEl.addEventListener("input", function () { 
+      refreshAvatar(); 
+      var v = emailEl.value.trim();
+      if (emailEl) emailEl.classList.toggle("is-invalid", v !== "" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)); 
     });
-    function markValid(el, ok) { if (el) el.classList.toggle("is-invalid", !ok && el.value.trim() !== ""); }
-    emailEl.addEventListener("input", function () { refreshAvatar(); markValid(emailEl, /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())); });
-    if (phoneEl) phoneEl.addEventListener("input", function () { phoneEl.value = phoneEl.value.replace(/\D/g, ""); markValid(phoneEl, /^1[3-9]\d{9}$/.test(phoneEl.value.trim())); });
+    if (websiteEl) websiteEl.addEventListener("input", refreshAvatar);
 
-    // 表情面板（CDN 图片，懒加载）
     if (emojiBtn && emojiPanel) {
       emojiBtn.addEventListener("click", function () {
         if (!emojiPanel.dataset.built) {
           emojiPanel.dataset.built = "1";
           EMOJI_NS.forEach(function (n) {
             var b = document.createElement("button"); b.type = "button";
-            var im = document.createElement("img"); im.loading = "lazy"; im.src = stickerSrc(n); im.alt = "表情";
+            var im = document.createElement("img"); im.loading = "lazy"; im.src = stickerSrc(n); im.alt = "Emoji";
             b.appendChild(im);
             b.addEventListener("click", function () { insertAtCursor(ta, "[/qq" + n + "]"); });
             emojiPanel.appendChild(b);
@@ -308,63 +323,60 @@
       }
     }
 
-    // 图片：图床上传 或 本地内嵌
     function renderAttach() {
       attachWrap.innerHTML = "";
       attached.forEach(function (url, idx) {
         var it = document.createElement("div"); it.className = "moe-cmt-attach-item";
-        it.innerHTML = '<img alt="预览" src="' + esc(url) + '"><button type="button" class="moe-cmt-attach-del" title="移除" aria-label="移除">×</button>';
+        it.innerHTML = '<img alt="Preview" src="' + esc(url) + '"><button type="button" class="moe-cmt-attach-del" title="Remove" aria-label="Remove">×</button>';
         it.querySelector(".moe-cmt-attach-del").addEventListener("click", function () { attached.splice(idx, 1); renderAttach(); });
         attachWrap.appendChild(it);
       });
       attachWrap.hidden = attached.length === 0;
     }
     if (imgBtn && imgInput) {
-      imgBtn.addEventListener("click", function () { if (!UP.url && attached.length >= MAX_IMG) { setTip("最多 " + MAX_IMG + " 张图片", "is-err"); return; } imgInput.value = ""; imgInput.click(); });
+      imgBtn.addEventListener("click", function () { if (!UP.url && attached.length >= MAX_IMG) { setTip("Maximum " + MAX_IMG + " images allowed", "is-err"); return; } imgInput.value = ""; imgInput.click(); });
       imgInput.addEventListener("change", function () {
         var file = imgInput.files && imgInput.files[0]; if (!file) return;
-        if (!/^image\//.test(file.type)) { setTip("请选择图片文件", "is-err"); return; }
-        if (UP.url) { setTip("图片上传中…", ""); uploadToBed(file, function (url) { insertAtCursor(ta, "![" + (file.name || "图片") + "](" + url + ")"); setTip("图片上传成功！", "is-ok"); }, function (msg) { setTip(msg, "is-err"); }); }
-        else { fileToDataUrl(file, function (u) { if (u) { attached.push(u); renderAttach(); } else setTip("图片读取失败", "is-err"); }); }
+        if (!/^image\//.test(file.type)) { setTip("Please select an image file", "is-err"); return; }
+        if (UP.url) { setTip("Uploading image…", ""); uploadToBed(file, function (url) { insertAtCursor(ta, "![" + (file.name || "image") + "](" + url + ")"); setTip("Image uploaded successfully!", "is-ok"); }, function (msg) { setTip(msg, "is-err"); }); }
+        else { fileToDataUrl(file, function (u) { if (u) { attached.push(u); renderAttach(); } else setTip("Failed to read image", "is-err"); }); }
       });
     }
 
-    // 预览
     pvBtn.addEventListener("click", function () {
       if (pv.hidden) {
         var t = (ta.value || "").trim();
-        var full = t + attached.map(function (u) { return "\n![图片](" + u + ")"; }).join("");
-        pv.innerHTML = full ? renderContent(full) : '<span class="moe-cmt-muted">没有可预览的内容</span>';
-        pv.hidden = false; pvBtn.textContent = "收起"; fixAvatars(pv); bindLightbox(pv);
-      } else { pv.hidden = true; pvBtn.textContent = "预览"; }
+        var full = t + attached.map(function (u) { return "\n![image](" + u + ")"; }).join("");
+        pv.innerHTML = full ? renderContent(full) : '<span class="moe-cmt-muted">No content to preview</span>';
+        pv.hidden = false; pvBtn.textContent = "Collapse"; fixAvatars(pv); bindLightbox(pv);
+      } else { pv.hidden = true; pvBtn.textContent = "Preview"; }
     });
 
     btn.addEventListener("click", function () {
       var f = readForm(wrap); var err = validate(f);
       if (err) { setTip(err, "is-err"); return; }
-      var qq = (f.qq && /^\d{5,13}$/.test(f.qq)) ? f.qq : "";
-      var info = { nickname: f.nickname, phone: f.phone, email: f.email, qq: qq, avatar: qq ? qqAvatar(qq) : cravatarByEmail(f.email) };
-      saveAuthor({ nickname: f.nickname, qq: qq, phone: f.phone, email: f.email });
-      var fullRaw = f.text + attached.map(function (u) { return "\n![图片](" + u + ")"; }).join("");
-      btn.disabled = true; btn.textContent = "提交中…"; setTip("", "");
+      var calculatedAvatar = avatarFor(f.email, f.website);
+      var info = { nickname: f.nickname, email: f.email, website: f.website, avatar: calculatedAvatar };
+      saveAuthor({ nickname: f.nickname, email: f.email, website: f.website });
+      var fullRaw = f.text + attached.map(function (u) { return "\n![image](" + u + ")"; }).join("");
+      btn.disabled = true; btn.textContent = "Submitting…"; setTip("", "");
       onSubmit(fullRaw, info).then(function () {
-        ta.value = ""; attached = []; renderAttach(); pv.hidden = true; pvBtn.textContent = "预览";
-        setTip("评论成功！如开启审核，将在站长通过后显示。", "is-ok");
-      }).catch(function (e) { setTip("评论失败：" + (e && e.message ? e.message : "未知错误"), "is-err"); console.error("[moe-comment]", e); })
-        .then(function () { btn.disabled = false; btn.textContent = "提交"; });
+        ta.value = ""; attached = []; renderAttach(); pv.hidden = true; pvBtn.textContent = "Preview";
+        setTip("✨ Comment recorded! If moderation is active, it will appear shortly.", "is-ok");
+      }).catch(function (e) { setTip("Submission failed: " + (e && e.message ? e.message : "Unknown error"), "is-err"); console.error("[moe-comment]", e); })
+        .then(function () { btn.disabled = false; btn.textContent = "Send Comment"; });
     });
   }
 
-  // ---------- 渲染评论 ----------
   function commentNode(item) {
     var spec = item.spec || {}, owner = item.owner || spec.owner || {}, meta = item.metadata || {};
     var el = document.createElement("div"); el.className = "moe-cmt-item";
     el.innerHTML =
-      '<img class="moe-cmt-avatar" alt="头像" loading="lazy" src="' + esc(avatarOf(owner)) + '">' +
+      '<img class="moe-cmt-avatar" alt="Avatar" loading="lazy" src="' + esc(avatarOf(owner)) + '">' +
       '<div class="moe-cmt-body">' +
-        '<div class="moe-cmt-head"><span class="moe-cmt-name">' + esc(ownerDisplay(owner).name || "匿名") + '</span><span class="moe-cmt-time">' + esc(timeAgo(spec.creationTime || meta.creationTimestamp)) + '</span></div>' +
+        '<div class="moe-cmt-head"><span class="moe-cmt-name">' + esc(owner.displayName || "Anonymous Voyager") + '</span><span class="moe-cmt-time">' + esc(timeAgo(spec.creationTime || meta.creationTimestamp)) + '</span></div>' +
         '<div class="moe-cmt-content">' + displayHtml(spec) + '</div>' +
-        '<div class="moe-cmt-actions"><button type="button" class="moe-cmt-reply-btn">回复</button></div>' +
+        '<div class="moe-cmt-actions"><button type="button" class="moe-cmt-reply-btn">Reply</button></div>' +
         '<div class="moe-cmt-replies" data-replies></div>' +
         '<div class="moe-cmt-reply-box" hidden></div>' +
       '</div>';
@@ -379,6 +391,7 @@
     fixAvatars(el); bindLightbox(el);
     return el;
   }
+
   function loadRepliesInto(commentEl, commentName) {
     var box = commentEl.querySelector("[data-replies]");
     listReplies(commentName, 0, 100).then(function (res) {
@@ -387,25 +400,25 @@
         var s = r.spec || {}, o = r.owner || s.owner || {}, m = r.metadata || {};
         var rEl = document.createElement("div"); rEl.className = "moe-cmt-item is-reply";
         rEl.innerHTML =
-          '<img class="moe-cmt-avatar" alt="头像" loading="lazy" src="' + esc(avatarOf(o)) + '">' +
-          '<div class="moe-cmt-body"><div class="moe-cmt-head"><span class="moe-cmt-name">' + esc(ownerDisplay(o).name || "匿名") + '</span><span class="moe-cmt-time">' + esc(timeAgo(s.creationTime || m.creationTimestamp)) + '</span></div>' +
+          '<img class="moe-cmt-avatar" alt="Avatar" loading="lazy" src="' + esc(avatarOf(o)) + '">' +
+          '<div class="moe-cmt-body"><div class="moe-cmt-head"><span class="moe-cmt-name">' + esc(o.displayName || "Anonymous Voyager") + '</span><span class="moe-cmt-time">' + esc(timeAgo(s.creationTime || m.creationTimestamp)) + '</span></div>' +
           '<div class="moe-cmt-content">' + displayHtml(s) + '</div></div>';
         box.appendChild(rEl);
       });
       fixAvatars(box); bindLightbox(box);
-    }).catch(function (e) { console.error("[moe-comment] 回复加载失败：", e); });
+    }).catch(function (e) { console.error("[moe-comment] Failed to load replies:", e); });
   }
 
-  // ---------- 初始化 ----------
   function init(root) {
     if (!root || root.dataset.moeMounted === "1") return;
     root.dataset.moeMounted = "1";
+
     var postName = root.dataset.name, kind = root.dataset.kind || "Post", group = root.dataset.group || GROUP, SIZE = 10, page = 0;
     root.innerHTML =
       '<div class="moe-cmt-formwrap"></div>' +
-      '<div class="moe-cmt-listhead"><span class="moe-cmt-count">评论</span></div>' +
+      '<div class="moe-cmt-listhead"><span class="moe-cmt-count">Comments</span></div>' +
       '<div class="moe-cmt-list" aria-live="polite"></div>' +
-      '<div class="moe-cmt-more" hidden><button type="button" class="moe-cmt-more-btn">加载更多</button></div>' +
+      '<div class="moe-cmt-more" hidden><button type="button" class="moe-cmt-more-btn">Load More Comments</button></div>' +
       '<div class="moe-cmt-state" data-state></div>';
     var formWrap = root.querySelector(".moe-cmt-formwrap"), listEl = root.querySelector(".moe-cmt-list"), countEl = root.querySelector(".moe-cmt-count");
     var moreWrap = root.querySelector(".moe-cmt-more"), moreBtn = root.querySelector(".moe-cmt-more-btn"), stateEl = root.querySelector("[data-state]");
@@ -413,19 +426,20 @@
     bindForm(formWrap, function (text, info) { return createComment(group, kind, postName, text, info).then(function () { reload(); }); });
     function reload() { page = 0; listEl.innerHTML = ""; load(); }
     function load() {
-      stateEl.textContent = page === 0 ? "评论加载中…" : "";
+      stateEl.textContent = page === 0 ? "Loading comments…" : "";
       listComments(group, kind, postName, page, SIZE).then(function (res) {
         stateEl.textContent = "";
         var items = (res && res.items) || [], total = (res && res.total) != null ? res.total : items.length;
-        countEl.textContent = total > 0 ? (total + " 条评论") : "暂无评论，来抢沙发吧～";
+        countEl.textContent = total > 0 ? (total + " Thoughts Shared") : "No comments yet. Be the first to leave a ripple on this shore~";
         items.forEach(function (it) { listEl.appendChild(commentNode(it)); });
         var hasNext = res && (res.hasNext != null ? res.hasNext : (res.page + 1 < res.totalPages));
         moreWrap.hidden = !hasNext; if (hasNext) page += 1;
-      }).catch(function (e) { stateEl.textContent = "评论加载失败：" + (e && e.message ? e.message : "请稍后重试"); console.error("[moe-comment] 列表加载失败：", e); });
+      }).catch(function (e) { stateEl.textContent = "Unable to load comments: " + (e && e.message ? e.message : "Please try again shortly"); console.error("[moe-comment] Failed to load list:", e); });
     }
     moreBtn.addEventListener("click", load);
     load();
   }
+
   function boot() { document.querySelectorAll("#moe-comment[data-name]").forEach(init); }
   boot.mount = init;
   window.MoesoraComment = boot;

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{modules/layout :: layout(content=~{::content}, hero=~{}, isHome=false)}">
 <body>
 <th:block th:fragment="content">
   <article class="moe-card moe-moment">
-    <div class="moe-moment-body" th:utext="${moment.spec.content.html}">内容</div>
+    <div class="moe-moment-body" th:utext="${moment.spec.content.html}">Content</div>
   </article>
 </th:block>
 </body>

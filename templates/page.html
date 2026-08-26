@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:halo="https://halo.run"
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:halo="https://halo.run"
       th:replace="~{modules/layout :: layout(content=~{::content}, hero=~{}, isHome=false)}">
 <body>
 <th:block th:fragment="content">
@@ -16,12 +16,12 @@
       <div class="moe-fancy-head-text">
       <h1 class="moe-page-title">
         <span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon(${pkey})}"></th:block></span>
-        <span th:text="${pt}">页面标题</span>
+        <span th:text="${pt}">Page Title</span>
       </h1>
       <div class="moe-article-meta" th:if="${singlePage.stats != null}">
         <span class="moe-meta-item" th:if="${singlePage.spec.publishTime != null}">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-          <span th:text="${#temporals.format(singlePage.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">日期</span>
+          <span th:text="${#temporals.format(singlePage.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">Date</span>
         </span>
         <span class="moe-meta-item">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -30,14 +30,14 @@
       </div>
       </div>
     </div>
-    <div class="moe-post-content" th:utext="${singlePage.content.content}">正文</div>
+    <div class="moe-post-content" th:utext="${singlePage.content.content}">Content</div>
   </article>
 
   <!-- 评论（受页面「允许评论」开关控制） -->
   <section class="moe-card moe-comments" id="comments"
            th:with="csys=${theme.config.comment?.comment_system} ?: 'moesora'"
            th:if="${singlePage.spec.allowComment and csys != 'none'}">
-    <h3 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('comment')}"></th:block></span>评论</h3>
+    <h3 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('comment')}"></th:block></span>Comments</h3>
 
     <!-- Moesora 内置评论（kind=SinglePage） -->
     <div th:if="${csys == 'moesora'}" id="moe-comment"

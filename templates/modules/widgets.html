@@ -9,7 +9,7 @@
 
   <!-- 文章目录 TOC：默认隐藏，文章页有标题时由脚本填充并显示 -->
   <section th:case="'toc'" id="moe-toc-card" class="moe-card moe-toc" hidden>
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('list')}"></th:block></span>目录</h4>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('list')}"></th:block></span>Contents</h4>
     <nav id="moe-toc" class="moe-toc-nav"></nav>
   </section>
 
@@ -23,20 +23,20 @@
          th:src="${pAvatar} ?: @{/assets/dist/logo.svg}" alt="avatar"/>
     <h3 class="moe-profile-name" th:text="${!#strings.isEmpty(theme.config.basic?.name_profile) ? theme.config.basic.name_profile : (!#strings.isEmpty(theme.config.basic?.blog_name) ? theme.config.basic.blog_name : (site.title ?: 'Moesora'))}">Moesora</h3>
     <p class="moe-profile-bio" id="moe-profile-bio"
-       th:text="${!#strings.isEmpty(theme.config.sidebar?.profile_signature) ? theme.config.sidebar.profile_signature : site.subtitle}">少女祈祷中...</p>
+       th:text="${!#strings.isEmpty(theme.config.sidebar?.profile_signature) ? theme.config.sidebar.profile_signature : site.subtitle}">Starlight whispers...</p>
     <p class="moe-profile-loc" th:if="${!#strings.isEmpty(theme.config.sidebar?.profile_location)}">
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span th:text="${theme.config.sidebar.profile_location}">位置</span>
+      <span th:text="${theme.config.sidebar.profile_location}">Location</span>
     </p>
     <div class="moe-profile-stats">
       <a class="moe-stat" th:href="@{/archives}">
-        <span class="moe-stat-num" th:text="${postTotal}">0</span><span class="moe-stat-label">文章</span>
+        <span class="moe-stat-num" th:text="${postTotal}">0</span><span class="moe-stat-label">Posts</span>
       </a>
       <a class="moe-stat" th:href="@{/categories}">
-        <span class="moe-stat-num" th:text="${catTotal}">0</span><span class="moe-stat-label">分类</span>
+        <span class="moe-stat-num" th:text="${catTotal}">0</span><span class="moe-stat-label">Categories</span>
       </a>
       <a class="moe-stat" th:href="@{/tags}">
-        <span class="moe-stat-num" th:text="${tagTotal}">0</span><span class="moe-stat-label">标签</span>
+        <span class="moe-stat-num" th:text="${tagTotal}">0</span><span class="moe-stat-label">Tags</span>
       </a>
     </div>
     <div class="moe-profile-social"
@@ -77,48 +77,66 @@
 
   <!-- 公告 -->
   <section th:case="'notice'" class="moe-card">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('megaphone')}"></th:block></span>公告</h4>
-    <p class="moe-card-body" th:utext="${!#strings.isEmpty(theme.config.sidebar?.notice_content) ? theme.config.sidebar.notice_content : '欢迎来到 Moesora ~ ♪'}">欢迎来到 Moesora ~ ♪</p>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('megaphone')}"></th:block></span>Announcements</h4>
+    <p class="moe-card-body" th:utext="${!#strings.isEmpty(theme.config.sidebar?.notice_content) ? theme.config.sidebar.notice_content : 'Welcome to my quiet shores ~ ♪'}">Welcome to my quiet shores ~ ♪</p>
   </section>
 
   <!-- 恋爱墙 -->
   <section th:case="'love'" class="moe-card moe-love" th:if="${theme.config.sidebar?.love_enable} ?: false">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('hearts')}"></th:block></span>在一起</h4>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('hearts')}"></th:block></span>Love Story</h4>
     <div class="moe-love-avatars">
       <a th:href="${theme.config.sidebar?.love_oneself_url} ?: '#'" target="_blank" rel="noopener">
-        <img th:src="${theme.config.sidebar?.love_oneself_avatar} ?: @{/assets/dist/logo.svg}" alt="TA"/>
+        <img th:src="${theme.config.sidebar?.love_oneself_avatar} ?: @{/assets/dist/logo.svg}" alt="Partner 1"/>
       </a>
       <span class="moe-love-heart">❤</span>
       <a th:href="${theme.config.sidebar?.love_opposite_url} ?: '#'" target="_blank" rel="noopener">
-        <img th:src="${theme.config.sidebar?.love_opposite_avatar} ?: @{/assets/dist/logo.svg}" alt="我"/>
+        <img th:src="${theme.config.sidebar?.love_opposite_avatar} ?: @{/assets/dist/logo.svg}" alt="Partner 2"/>
       </a>
     </div>
     <div class="moe-love-time" id="moe-love-time"
-         th:attr="data-start=${theme.config.sidebar?.love_time}">永远在一起</div>
+         th:attr="data-start=${theme.config.sidebar?.love_time}">Together Forever</div>
   </section>
 
   <!-- 音乐播放器（侧栏模式：仅在未开启"悬浮"时显示） -->
   <section th:case="'music'" class="moe-card moe-music-card"
-           th:if="${(theme.config.sidebar?.music_enable ?: false) and !(theme.config.sidebar?.music_float ?: false)}">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('music')}"></th:block></span>音乐</h4>
-    <meting-js server="netease" type="playlist"
-               th:attr="id=${theme.config.sidebar?.netease_playlist_id}"
+           th:if="${(theme.config.sidebar?.music_enable ?: false) and !(theme.config.sidebar?.music_float ?: false)}"
+           th:with="mId=${theme.config.sidebar?.netease_playlist_id}">
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('music')}"></th:block></span>Music</h4>
+    <!-- SoundCloud Embed -->
+    <div th:if="${mId != null and #strings.contains(mId, 'soundcloud.com')}" style="padding:6px 0;text-align:center;">
+      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" style="border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F1927059356&color=%2338bdf8&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
+      <div style="font-size:12px;font-weight:600;margin-top:6px;color:var(--moe-theme, #38bdf8);">✨ Astrum Unicum · Shorekeeper Theme</div>
+    </div>
+    <!-- NetEase Official Player -->
+    <div th:if="${mId != null and (#strings.startsWith(mId, '2183') or #strings.startsWith(mId, '2021') or #strings.contains(mId, 'music.163.com')) and !#strings.contains(mId, 'soundcloud.com')}" style="padding:6px 0;text-align:center;">
+      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="100%" height="86" style="border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" src="//music.163.com/outchain/player?type=2&id=2183204968&auto=0&height=66"></iframe>
+      <div style="font-size:12px;font-weight:600;margin-top:6px;color:var(--moe-theme, #38bdf8);">✨ Astrum Unicum · Shorekeeper Theme</div>
+    </div>
+    <!-- YouTube Embed -->
+    <div th:if="${mId != null and (#strings.contains(mId, 'youtu') or #strings.contains(mId, 'youtube')) and !#strings.contains(mId, 'soundcloud.com')}" style="padding:6px 0;text-align:center;">
+      <iframe style="border-radius:10px;width:100%;aspect-ratio:16/9;box-shadow:0 4px 12px rgba(0,0,0,0.15);" src="https://www.youtube-nocookie.com/embed/ErE1Wd540fI" title="Astrum Unicum / Stars, Rebirth, and You" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      <div style="font-size:12px;font-weight:600;margin-top:6px;color:var(--moe-theme, #38bdf8);">✨ Astrum Unicum · Shorekeeper Theme</div>
+    </div>
+    <!-- MetingJS -->
+    <meting-js th:if="${mId == null or (!#strings.contains(mId, 'soundcloud.com') and !#strings.contains(mId, 'youtu') and !#strings.contains(mId, 'youtube') and !#strings.startsWith(mId, '2183') and !#strings.startsWith(mId, '2021') and !#strings.contains(mId, 'music.163.com'))}"
+               server="netease" type="playlist"
+               th:attr="id=${mId}"
                fixed="false" mini="false" autoplay="false" order="list" preload="none"
                list-folded="true" list-max-height="180px"></meting-js>
   </section>
 
   <!-- 关于 -->
   <section th:case="'about'" class="moe-card">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('heart')}"></th:block></span>关于</h4>
-    <p class="moe-card-body" th:utext="${!#strings.isEmpty(theme.config.sidebar?.about_content) ? theme.config.sidebar.about_content : '一个二次元风格的 Halo 主题，正在一步步长大。'}">一个二次元风格的 Halo 主题，正在一步步长大。</p>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('heart')}"></th:block></span>About</h4>
+    <p class="moe-card-body" th:utext="${!#strings.isEmpty(theme.config.sidebar?.about_content) ? theme.config.sidebar.about_content : 'A tranquil sanctuary beneath the starry sky.'}">A tranquil sanctuary beneath the starry sky.</p>
   </section>
 
   <!-- 友链 -->
   <section th:case="'links'" class="moe-card" th:if="${pluginFinder.available('PluginLinks')}"
            th:with="linkGroups=${linkFinder.groupBy()}">
     <div class="moe-cat-head">
-      <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span>友链</h4>
-      <a class="moe-cat-more" th:href="@{/links}">更多 »</a>
+      <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span>Friend Links</h4>
+      <a class="moe-cat-more" th:href="@{/links}">More »</a>
     </div>
     <div class="moe-friend-list"
          th:style="'--moe-links-limit:' + (${theme.config.sidebar?.links_limit} ?: 0)">
@@ -127,7 +145,7 @@
            th:href="${link.spec.url}" target="_blank" rel="noopener"
            th:title="${link.spec.description}"
            th:with="raw=${#strings.replace(#strings.replace(link.spec.url,'https://',''),'http://','')}">
-          <span class="moe-friend-name" th:text="${link.spec.displayName}">友链</span>
+          <span class="moe-friend-name" th:text="${link.spec.displayName}">Link</span>
           <span class="moe-friend-host" th:text="${#strings.contains(raw,'/') ? #strings.substringBefore(raw,'/') : raw}">domain</span>
         </a>
       </th:block>
@@ -137,12 +155,12 @@
   <!-- 最近文章 -->
   <section th:case="'recent'" class="moe-card"
            th:with="recent=${postFinder.list(1, (theme.config.sidebar?.recent_posts_count ?: 5))}">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('edit')}"></th:block></span>最近文章</h4>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('edit')}"></th:block></span>Recent Posts</h4>
     <ul class="moe-recent">
       <li th:each="p : ${recent.items}">
-        <a th:href="${p.status.permalink}" th:text="${p.spec.title}">标题</a>
+        <a th:href="${p.status.permalink}" th:text="${p.spec.title}">Title</a>
       </li>
-      <li th:if="${recent.items.isEmpty()}" class="moe-muted-text">还没有文章</li>
+      <li th:if="${recent.items.isEmpty()}" class="moe-muted-text">No posts yet</li>
     </ul>
   </section>
 
@@ -150,13 +168,13 @@
   <th:block th:case="'categories'" th:with="catList=${categoryFinder.list(1, theme.config.sidebar?.category_count ?: 8).items}">
     <section class="moe-card moe-cat-card" th:if="${catList != null and !catList.isEmpty()}">
       <div class="moe-cat-head">
-        <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('folder')}"></th:block></span>分类</h4>
-        <a class="moe-cat-more" th:href="@{/categories}">更多 »</a>
+        <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('folder')}"></th:block></span>Categories</h4>
+        <a class="moe-cat-more" th:href="@{/categories}">More »</a>
       </div>
       <ul class="moe-cat-list">
         <li th:each="cat : ${catList}">
           <a th:href="${cat.status.permalink}">
-            <span class="moe-cat-name" th:text="${cat.spec.displayName}">分类</span>
+            <span class="moe-cat-name" th:text="${cat.spec.displayName}">Category</span>
             <span class="moe-cat-count" th:text="${cat.status?.postCount} ?: 0">0</span>
           </a>
         </li>
@@ -168,14 +186,14 @@
   <th:block th:case="'tags'" th:with="allTags=${tagFinder.list(1, theme.config.sidebar?.tag_count ?: 20).items}">
     <section class="moe-card" th:if="${allTags != null and !allTags.isEmpty()}">
       <div class="moe-cat-head">
-        <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('tag')}"></th:block></span>标签</h4>
-        <a class="moe-cat-more" th:href="@{/tags}">更多 »</a>
+        <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('tag')}"></th:block></span>Tags</h4>
+        <a class="moe-cat-more" th:href="@{/tags}">More »</a>
       </div>
       <div class="moe-tag-cloud">
         <a th:each="tag : ${allTags}" class="moe-chip"
            th:href="${tag.status.permalink}"
            th:style="${tag.spec.color != null and tag.spec.color != '#ffffff'} ? '--moe-c:' + ${tag.spec.color} : ''"
-           th:text="'# ' + ${tag.spec.displayName}">标签</a>
+           th:text="'# ' + ${tag.spec.displayName}">Tag</a>
       </div>
     </section>
   </th:block>
@@ -183,13 +201,13 @@
   <!-- 时间天气：当前天气(大字置顶) + 实时时钟(小字置底)。Open-Meteo 免key；城市留空则按访客IP尽力定位 -->
   <section th:case="'weather'" class="moe-card moe-weather"
            th:attr="data-city=${theme.config.sidebar?.weather_city}">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>时间天气</h4>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>Time &amp; Weather</h4>
     <div class="moe-weather-main">
       <span class="moe-weather-icon" data-role="icon"></span>
       <div class="moe-weather-info">
         <div class="moe-weather-temp" data-role="temp">--°</div>
         <div class="moe-weather-sub">
-          <span data-role="cond">获取中…</span>
+          <span data-role="cond">Loading…</span>
           <span class="moe-weather-loc"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg><span data-role="city">--</span></span>
         </div>
       </div>
@@ -200,7 +218,7 @@
     </div>
     <button type="button" class="moe-weather-gps" data-role="gps" th:if="${theme.config.sidebar?.weather_gps == 'true'}">
       <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      <span data-role="gpstext">使用精确定位</span>
+      <span data-role="gpstext">Precise Location</span>
     </button>
     <script>
     (function(){
@@ -210,30 +228,30 @@
       var elT=root.querySelector('[data-role="time"]'), elD=root.querySelector('[data-role="date"]');
       var elIcon=root.querySelector('[data-role="icon"]'), elTemp=root.querySelector('[data-role="temp"]');
       var elCond=root.querySelector('[data-role="cond"]'), elCity=root.querySelector('[data-role="city"]');
-      var WK=["日","一","二","三","四","五","六"];
+      var WK=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
       function pad(n){ return n<10?"0"+n:""+n; }
       if(root.__moeWxTimer){ clearInterval(root.__moeWxTimer); }
       function tickClock(){
         if(!document.body.contains(root)){ if(root.__moeWxTimer) clearInterval(root.__moeWxTimer); return; }
         var d=new Date();
         if(elT) elT.textContent=pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
-        if(elD) elD.textContent=(d.getMonth()+1)+"月"+d.getDate()+"日 周"+WK[d.getDay()];
+        if(elD) elD.textContent=WK[d.getDay()] + ", " + (d.getMonth()+1)+"/"+d.getDate();
       }
       tickClock(); root.__moeWxTimer=setInterval(tickClock,1000);
       function wmo(c){ c=+c;
-        if(c===0) return ["晴","sun"];
-        if(c===1) return ["晴间多云","cloudsun"];
-        if(c===2) return ["多云","cloudsun"];
-        if(c===3) return ["阴","cloud"];
-        if(c===45||c===48) return ["雾","fog"];
-        if(c>=51&&c<=57) return ["毛毛雨","rain"];
-        if(c>=61&&c<=67) return ["雨","rain"];
-        if(c>=71&&c<=77) return ["雪","snow"];
-        if(c>=80&&c<=82) return ["阵雨","rain"];
-        if(c===85||c===86) return ["阵雪","snow"];
-        if(c===95) return ["雷阵雨","thunder"];
-        if(c>=96) return ["雷雨冰雹","thunder"];
-        return ["多云","cloud"];
+        if(c===0) return ["Sunny","sun"];
+        if(c===1) return ["Mainly Sunny","cloudsun"];
+        if(c===2) return ["Partly Cloudy","cloudsun"];
+        if(c===3) return ["Overcast","cloud"];
+        if(c===45||c===48) return ["Fog","fog"];
+        if(c>=51&&c<=57) return ["Drizzle","rain"];
+        if(c>=61&&c<=67) return ["Rain","rain"];
+        if(c>=71&&c<=77) return ["Snow","snow"];
+        if(c>=80&&c<=82) return ["Showers","rain"];
+        if(c===85||c===86) return ["Snow Showers","snow"];
+        if(c===95) return ["Thunderstorm","thunder"];
+        if(c>=96) return ["Thunder & Hail","thunder"];
+        return ["Cloudy","cloud"];
       }
       function icon(g,day){
         var s='<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">',e='</svg>';
@@ -253,35 +271,35 @@
         if(elIcon) elIcon.innerHTML=icon(w[1],day);
         if(elTemp) elTemp.textContent=Math.round(temp)+"°";
         if(elCond) elCond.textContent=w[0];
-        if(elCity) elCity.textContent=name||"未知";
+        if(elCity) elCity.textContent=name||"Unknown";
         root.classList.remove("is-fail");
       }
       function fail(msg){
         root.classList.add("is-fail");
         if(elIcon) elIcon.innerHTML=icon("cloud",true);
         if(elTemp) elTemp.textContent="--°";
-        if(elCond) elCond.textContent=msg||"天气获取失败";
+        if(elCond) elCond.textContent=msg||"Weather unavailable";
         if(elCity) elCity.textContent=(root.getAttribute("data-city")||"").trim()||"";
       }
-      // ===== GPS 精确定位（仅后台开启、按钮存在时可用；点击触发 + 本地缓存避免重复弹窗）=====
+      // ===== GPS =====
       var GPS_KEY="moe-wx-gps", GPS_TTL=604800000;
       var gpsBtn=root.querySelector('[data-role="gps"]'), gpsTxt=root.querySelector('[data-role="gpstext"]');
       function getGpsCache(){ try{ var o=JSON.parse(localStorage.getItem(GPS_KEY)||"null"); if(o&&o.lat!=null&&(Date.now()-o.t)<GPS_TTL) return o; }catch(e){} return null; }
       function saveGpsCache(la,lo,nm){ try{ localStorage.setItem(GPS_KEY,JSON.stringify({lat:la,lon:lo,name:nm,t:Date.now()})); }catch(e){} }
       function useGps(){
-        if(!navigator.geolocation){ if(gpsTxt) gpsTxt.textContent="浏览器不支持定位"; return; }
-        if(gpsBtn) gpsBtn.disabled=true; if(gpsTxt) gpsTxt.textContent="定位中…";
+        if(!navigator.geolocation){ if(gpsTxt) gpsTxt.textContent="Geolocation not supported"; return; }
+        if(gpsBtn) gpsBtn.disabled=true; if(gpsTxt) gpsTxt.textContent="Locating…";
         navigator.geolocation.getCurrentPosition(function(pos){
           var la=pos.coords.latitude, lo=pos.coords.longitude;
-          if(gpsBtn) gpsBtn.disabled=false; if(gpsTxt) gpsTxt.textContent="使用精确定位";
-          fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+la+"&longitude="+lo+"&localityLanguage=zh")
+          if(gpsBtn) gpsBtn.disabled=false; if(gpsTxt) gpsTxt.textContent="Precise Location";
+          fetch("https://api.bigdatacloud.net/data/reverse-geocode-client?latitude="+la+"&longitude="+lo+"&localityLanguage=en")
             .then(function(r){ return r.json(); })
-            .then(function(j){ var nm=(j&&(j.city||j.locality||j.principalSubdivision))||"当前位置"; saveGpsCache(la,lo,nm); fetchWx(la,lo,nm); })
-            .catch(function(){ saveGpsCache(la,lo,"当前位置"); fetchWx(la,lo,"当前位置"); });
+            .then(function(j){ var nm=(j&&(j.city||j.locality||j.principalSubdivision))||"Current Location"; saveGpsCache(la,lo,nm); fetchWx(la,lo,nm); })
+            .catch(function(){ saveGpsCache(la,lo,"Current Location"); fetchWx(la,lo,"Current Location"); });
         }, function(err){
           if(gpsBtn) gpsBtn.disabled=false;
-          if(gpsTxt) gpsTxt.textContent=(err&&err.code===1)?"已拒绝授权":"定位失败";
-          setTimeout(function(){ if(gpsTxt) gpsTxt.textContent="使用精确定位"; },2500);
+          if(gpsTxt) gpsTxt.textContent=(err&&err.code===1)?"Permission Denied":"Location Failed";
+          setTimeout(function(){ if(gpsTxt) gpsTxt.textContent="Precise Location"; },2500);
         }, { enableHighAccuracy:true, timeout:10000, maximumAge:600000 });
       }
       if(gpsBtn) gpsBtn.addEventListener("click", useGps);
@@ -299,19 +317,19 @@
       }
       var city=(root.getAttribute("data-city")||"").trim();
       if(city){
-        fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(city)+"&count=1&language=zh&format=json")
+        fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(city)+"&count=1&language=en&format=json")
           .then(function(r){ return r.json(); })
           .then(function(j){
             var g=j&&j.results&&j.results[0];
-            if(!g) return fail("未找到该城市");
+            if(!g) return fail("City not found");
             fetchWx(g.latitude,g.longitude,g.name||city);
           }).catch(function(){ fail(); });
       } else if(gpsBtn && getGpsCache()){
-        var gc=getGpsCache(); fetchWx(gc.lat,gc.lon,gc.name||"当前位置");
+        var gc=getGpsCache(); fetchWx(gc.lat,gc.lon,gc.name||"Current Location");
       } else {
         function resolveZh(enName,lat,lon){
-          if(!enName){ fetchWx(lat,lon,"本地"); return; }
-          fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(enName)+"&count=1&language=zh&format=json")
+          if(!enName){ fetchWx(lat,lon,"Local"); return; }
+          fetch("https://geocoding-api.open-meteo.com/v1/search?name="+encodeURIComponent(enName)+"&count=1&language=en&format=json")
             .then(function(r){ return r.json(); })
             .then(function(j){ var g=j&&j.results&&j.results[0]; fetchWx(lat,lon,(g&&g.name)||enName); })
             .catch(function(){ fetchWx(lat,lon,enName); });
@@ -320,9 +338,9 @@
           fetch("https://ipwho.is/")
             .then(function(r){ return r.json(); })
             .then(function(j){
-              if(!j||!j.success||j.latitude==null) return fail("定位失败，请在设置填城市");
+              if(!j||!j.success||j.latitude==null) return fail("Location failed, please set city in settings");
               resolveZh(j.city||j.region||"",j.latitude,j.longitude);
-            }).catch(function(){ fail("定位失败，请在设置填城市"); });
+            }).catch(function(){ fail("Location failed, please set city in settings"); });
         }
         fetch("https://api.ip.sb/geoip")
           .then(function(r){ return r.json(); })
@@ -340,10 +358,10 @@
            th:with="qMode=${theme.config.sidebar?.quote_mode ?: 'api_fallback'},
                     qApi=${theme.config.sidebar?.quote_api_url ?: 'https://v1.hitokoto.cn/'}"
            th:attr="data-mode=${qMode},data-api=${qApi}">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('quote')}"></th:block></span>每日一言</h4>
-    <p class="moe-quote-text" data-role="text">句子加载中…</p>
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('quote')}"></th:block></span>Daily Quote</h4>
+    <p class="moe-quote-text" data-role="text">Loading quote...</p>
     <p class="moe-quote-author" data-role="author"></p>
-    <button type="button" class="moe-quote-refresh" data-role="refresh" title="换一句" aria-label="换一句">
+    <button type="button" class="moe-quote-refresh" data-role="refresh" title="New Quote" aria-label="New Quote">
       <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11A8 8 0 0 0 6.3 6.3L4 8.6"/><path d="M4 4v4.6h4.6"/><path d="M4 13a8 8 0 0 0 13.7 4.7L20 15.4"/><path d="M20 20v-4.6h-4.6"/></svg>
     </button>
     <script th:inline="javascript">
@@ -360,7 +378,7 @@
 
       function renderCustom(){
         if(!custom || !custom.length){
-          if(elText) elText.textContent = "还没有配置任何自定义语句";
+          if(elText) elText.textContent = "No custom quotes configured yet";
           if(elAuthor) elAuthor.textContent = "";
           return;
         }
@@ -378,7 +396,7 @@
       }
 
       function loadFromApi(){
-        if(elText) elText.textContent = "句子加载中…";
+        if(elText) elText.textContent = "Loading quote...";
         if(elAuthor) elAuthor.textContent = "";
         fetch(api, { cache: "no-store" })
           .then(function(r){ if(!r.ok) throw new Error("http " + r.status); return r.json(); })
@@ -386,7 +404,7 @@
           .catch(function(){
             if(mode === "api_fallback"){ renderCustom(); }
             else {
-              if(elText) elText.textContent = "一言获取失败，请稍后重试";
+              if(elText) elText.textContent = "Failed to load quote. Please try again later.";
               if(elAuthor) elAuthor.textContent = "";
             }
           });

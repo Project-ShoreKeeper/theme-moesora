@@ -65,7 +65,7 @@
     ok: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></svg>'
   };
   var TYPES = { TIP: "tip", NOTE: "note", INFO: "tip", IMPORTANT: "note", TODO: "note", WARNING: "warn", WARN: "warn", CAUTION: "warn", DANGER: "danger", ERROR: "danger", SUCCESS: "ok", OK: "ok" };
-  var LABEL = { tip: "提示", note: "笔记", warn: "注意", danger: "警告", ok: "成功" };
+  var LABEL = { tip: "Tip", note: "Note", warn: "Warning", danger: "Danger", ok: "Success" };
 
   function buildCallout(bq) {
     var raw = (bq.textContent || "").replace(/^\s+/, "");

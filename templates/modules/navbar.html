@@ -17,18 +17,18 @@
            th:with="nm=${item.status.displayName},
                     ikey=${((#strings.contains(nm,'首页') or #strings.contains(nm,'主页') or #strings.containsIgnoreCase(nm,'home')) ? 'home' : ((#strings.contains(nm,'归档') or #strings.containsIgnoreCase(nm,'archive')) ? 'archive' : ((#strings.contains(nm,'分类') or #strings.containsIgnoreCase(nm,'categor')) ? 'folder' : ((#strings.contains(nm,'标签') or #strings.containsIgnoreCase(nm,'tag')) ? 'tag' : ((#strings.contains(nm,'说说') or #strings.contains(nm,'动态') or #strings.contains(nm,'瞬间') or #strings.containsIgnoreCase(nm,'moment')) ? 'chat' : ((#strings.contains(nm,'相册') or #strings.contains(nm,'图库') or #strings.containsIgnoreCase(nm,'photo') or #strings.containsIgnoreCase(nm,'gallery')) ? 'image' : ((#strings.contains(nm,'留言') or #strings.contains(nm,'联系') or #strings.containsIgnoreCase(nm,'message') or #strings.containsIgnoreCase(nm,'contact')) ? 'mail' : ((#strings.contains(nm,'友链') or #strings.contains(nm,'链接') or #strings.containsIgnoreCase(nm,'link') or #strings.containsIgnoreCase(nm,'friend')) ? 'link' : ((#strings.contains(nm,'关于') or #strings.containsIgnoreCase(nm,'about')) ? 'heart' : 'sparkle')))))))))}">
           <span class="moe-nav-ico"><th:block th:replace="~{modules/icons :: icon(${ikey})}"></th:block></span>
-          <span class="moe-nav-text" th:text="${nm}">菜单</span>
+          <span class="moe-nav-text" th:text="${nm}">Menu</span>
           <span th:if="${item.children != null and !item.children.isEmpty()}" class="moe-nav-caret" aria-hidden="true"><svg viewBox="0 0 12 8" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 2 6 6.2 10.5 2"/></svg></span>
         </a>
         <ul class="moe-nav-sub" th:if="${item.children != null and !item.children.isEmpty()}">
-          <li th:each="sub : ${item.children}" th:with="snm=${sub.status.displayName},sikey=${((#strings.contains(snm,'首页') or #strings.contains(snm,'主页') or #strings.containsIgnoreCase(snm,'home')) ? 'home' : ((#strings.contains(snm,'归档') or #strings.containsIgnoreCase(snm,'archive')) ? 'archive' : ((#strings.contains(snm,'分类') or #strings.containsIgnoreCase(snm,'categor')) ? 'folder' : ((#strings.contains(snm,'标签') or #strings.containsIgnoreCase(snm,'tag')) ? 'tag' : ((#strings.contains(snm,'说说') or #strings.contains(snm,'动态') or #strings.contains(snm,'瞬间') or #strings.containsIgnoreCase(snm,'moment')) ? 'chat' : ((#strings.contains(snm,'相册') or #strings.contains(snm,'图库') or #strings.containsIgnoreCase(snm,'photo') or #strings.containsIgnoreCase(snm,'gallery')) ? 'image' : ((#strings.contains(snm,'留言') or #strings.contains(snm,'联系') or #strings.containsIgnoreCase(snm,'message') or #strings.containsIgnoreCase(snm,'contact')) ? 'mail' : ((#strings.contains(snm,'友链') or #strings.contains(snm,'链接') or #strings.containsIgnoreCase(snm,'link') or #strings.containsIgnoreCase(snm,'friend')) ? 'link' : ((#strings.contains(snm,'关于') or #strings.containsIgnoreCase(snm,'about')) ? 'heart' : 'sparkle')))))))))}"><a class="moe-nav-sublink" th:href="${sub.status.href}"><span class="moe-nav-subico"><th:block th:replace="~{modules/icons :: icon(${sikey})}"></th:block></span><span th:text="${snm}">子项</span></a></li>
+          <li th:each="sub : ${item.children}" th:with="snm=${sub.status.displayName},sikey=${((#strings.contains(snm,'首页') or #strings.contains(snm,'主页') or #strings.containsIgnoreCase(snm,'home')) ? 'home' : ((#strings.contains(snm,'归档') or #strings.containsIgnoreCase(snm,'archive')) ? 'archive' : ((#strings.contains(snm,'分类') or #strings.containsIgnoreCase(snm,'categor')) ? 'folder' : ((#strings.contains(snm,'标签') or #strings.containsIgnoreCase(snm,'tag')) ? 'tag' : ((#strings.contains(snm,'说说') or #strings.contains(snm,'动态') or #strings.contains(snm,'瞬间') or #strings.containsIgnoreCase(snm,'moment')) ? 'chat' : ((#strings.contains(snm,'相册') or #strings.contains(snm,'图库') or #strings.containsIgnoreCase(snm,'photo') or #strings.containsIgnoreCase(snm,'gallery')) ? 'image' : ((#strings.contains(snm,'留言') or #strings.contains(snm,'联系') or #strings.containsIgnoreCase(snm,'message') or #strings.containsIgnoreCase(snm,'contact')) ? 'mail' : ((#strings.contains(snm,'友链') or #strings.contains(snm,'链接') or #strings.containsIgnoreCase(snm,'link') or #strings.containsIgnoreCase(snm,'friend')) ? 'link' : ((#strings.contains(snm,'关于') or #strings.containsIgnoreCase(snm,'about')) ? 'heart' : 'sparkle')))))))))}"><a class="moe-nav-sublink" th:href="${sub.status.href}"><span class="moe-nav-subico"><th:block th:replace="~{modules/icons :: icon(${sikey})}"></th:block></span><span th:text="${snm}">Item</span></a></li>
         </ul>
         </div>
       </th:block>
       <a th:unless="${primary != null and primary.menuItems != null and !primary.menuItems.isEmpty()}"
          class="moe-nav-link" th:href="@{/}">
         <span class="moe-nav-ico"><th:block th:replace="~{modules/icons :: icon('home')}"></th:block></span>
-        <span class="moe-nav-text">首页</span>
+        <span class="moe-nav-text">Home</span>
       </a>
     </nav>
 
@@ -40,7 +40,7 @@
         </svg>
       </span>
       <input class="moe-search-input" id="moe-search-input" type="search"
-             placeholder="搜索文章…" autocomplete="off" aria-label="搜索文章"/>
+             placeholder="Search posts..." autocomplete="off" aria-label="Search posts"/>
       <div class="moe-search-panel" id="moe-search-panel" hidden></div>
     </div>
     <script th:inline="javascript">
@@ -59,7 +59,7 @@
         var kw=input.value.trim().toLowerCase();
         if(!kw){panel.hidden=true;panel.innerHTML="";return;}
         var list=hits(kw).slice(0,8);
-        if(!list.length){panel.innerHTML='<div class="moe-search-empty">没有匹配的文章</div>';panel.hidden=false;return;}
+        if(!list.length){panel.innerHTML='<div class="moe-search-empty">No matching articles found</div>';panel.hidden=false;return;}
         panel.innerHTML=list.map(function(p){return '<a class="moe-search-item" href="'+p.u+'">'+esc(p.t)+'</a>';}).join("");
         panel.hidden=false;
       }
@@ -72,7 +72,7 @@
     })();
     </script>
 
-    <button id="moe-theme-toggle" class="moe-icon-btn" type="button" aria-label="切换明暗模式">
+    <button id="moe-theme-toggle" class="moe-icon-btn" type="button" aria-label="Toggle dark/light mode">
       <svg class="moe-icon-sun" viewBox="0 0 24 24" width="20" height="20" fill="none"
            stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <circle cx="12" cy="12" r="4"/>
@@ -88,13 +88,13 @@
          th:with="currentUser=${contributorFinder.getContributor(#authentication.name)},
                   isLoggedIn=${currentUser != null and !#strings.equals(currentUser.name, 'anonymousUser')},
                   loginUrl=${!#strings.isEmpty(theme.config.basic?.navbar_login_url) ? theme.config.basic.navbar_login_url : '/console'}">
-      <a th:unless="${isLoggedIn}" class="moe-user-login" th:href="@{${loginUrl}}" title="登录" aria-label="登录">
+      <a th:unless="${isLoggedIn}" class="moe-user-login" th:href="@{${loginUrl}}" title="Login" aria-label="Login">
         <span class="moe-user-login-ico" aria-hidden="true"><th:block th:replace="~{modules/icons :: icon('user')}"></th:block></span>
-        <span class="moe-user-login-text">登录</span>
+        <span class="moe-user-login-text">Login</span>
       </a>
 
       <div th:if="${isLoggedIn}" class="moe-user-menu">
-        <button class="moe-user-trigger" type="button" aria-label="用户菜单" aria-haspopup="true" style="width:38px;height:38px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;padding:3px;">
+        <button class="moe-user-trigger" type="button" aria-label="User Menu" aria-haspopup="true" style="width:38px;height:38px;border-radius:999px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;padding:3px;">
           <img th:if="${!#strings.isEmpty(currentUser.avatar)}" class="moe-user-avatar" th:src="${currentUser.avatar}" th:alt="${currentUser.displayName}" width="32" height="32" style="width:32px;height:32px;border-radius:50%;object-fit:cover;display:block;max-width:32px;max-height:32px;"/>
           <span th:unless="${!#strings.isEmpty(currentUser.avatar)}" class="moe-user-avatar moe-user-avatar-fallback" aria-hidden="true"><th:block th:replace="~{modules/icons :: icon('user')}"></th:block></span>
         </button>
@@ -104,17 +104,17 @@
             <img th:if="${!#strings.isEmpty(currentUser.avatar)}" class="moe-user-card-avatar" th:src="${currentUser.avatar}" th:alt="${currentUser.displayName}" width="40" height="40" style="width:40px;height:40px;border-radius:50%;object-fit:cover;display:block;max-width:40px;max-height:40px;"/>
             <span th:unless="${!#strings.isEmpty(currentUser.avatar)}" class="moe-user-card-avatar moe-user-card-avatar-fallback" aria-hidden="true"><th:block th:replace="~{modules/icons :: icon('user')}"></th:block></span>
             <div class="moe-user-card-meta">
-              <div class="moe-user-name" th:text="${!#strings.isEmpty(currentUser.displayName) ? currentUser.displayName : currentUser.name}">用户</div>
+              <div class="moe-user-name" th:text="${!#strings.isEmpty(currentUser.displayName) ? currentUser.displayName : currentUser.name}">User</div>
               <div class="moe-user-slug" th:text="${currentUser.name}">username</div>
             </div>
           </div>
           <a class="moe-user-dropdown-item" th:href="@{/console}" role="menuitem">
             <span class="moe-user-dropdown-ico" aria-hidden="true"><th:block th:replace="~{modules/icons :: icon('doc')}"></th:block></span>
-            <span>控制台</span>
+            <span>Console</span>
           </a>
           <a class="moe-user-dropdown-item" th:href="@{/uc}" role="menuitem">
             <span class="moe-user-dropdown-ico" aria-hidden="true"><th:block th:replace="~{modules/icons :: icon('user')}"></th:block></span>
-            <span>个人中心</span>
+            <span>Profile</span>
           </a>
           <form class="moe-user-logout-form" method="post" th:action="@{/logout}" th:attr="data-redirect=@{/}" role="none">
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
@@ -122,7 +122,7 @@
               <span class="moe-user-dropdown-ico" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M21 3v18"/></svg>
               </span>
-              <span>退出登录</span>
+              <span>Sign out</span>
             </button>
           </form>
         </div>
@@ -130,7 +130,7 @@
     </div>
 
     <!-- 移动端汉堡菜单按钮（窄屏显示） -->
-    <button id="moe-nav-toggle" class="moe-nav-toggle" type="button" aria-label="菜单" aria-expanded="false">
+    <button id="moe-nav-toggle" class="moe-nav-toggle" type="button" aria-label="Menu" aria-expanded="false">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
     </button>
   </div>

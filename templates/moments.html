@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{modules/layout :: layout(content=~{::content}, hero=~{}, isHome=false)}">
 <body>
 <th:block th:fragment="content"
           th:with="palette=${ {'#f9a8d4','#a5d8ff','#b2f2bb','#ffd8a8','#d0bfff','#ffc9c9','#99e9f2','#ffec99','#eebefa','#c0eb75'} }">
   <div class="moe-page-head moe-card moe-fancy-head">
-    <div class="moe-halo"><b class="moe-halo-num">0</b><small>条瞬间</small></div>
+    <div class="moe-halo"><b class="moe-halo-num">0</b><small>Moments</small></div>
     <div class="moe-fancy-head-text">
-      <h1 class="moe-page-title"><span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon('chat')}"></th:block></span><span>此刻心情</span></h1>
-      <p class="moe-page-sub">记录生活里那些细小而美好的瞬间 ☁️</p>
+      <h1 class="moe-page-title"><span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon('chat')}"></th:block></span><span>Moments & Thoughts</span></h1>
+      <p class="moe-page-sub">Preserving life's fleeting and beautiful fragments ☁️</p>
     </div>
   </div>
 
@@ -21,7 +21,7 @@
           <time class="moe-tl-time" th:if="${moment.spec.releaseTime != null}"
                 th:attr="datetime=${moment.spec.releaseTime}" th:text="${moment.spec.releaseTime}"></time>
 
-          <div class="moe-moment-body" th:utext="${moment.spec.content.html}">内容</div>
+          <div class="moe-moment-body" th:utext="${moment.spec.content.html}">Content</div>
 
           <div class="moe-moment-media"
                th:if="${moment.spec.content.medium != null and !moment.spec.content.medium.isEmpty()}">
@@ -54,7 +54,7 @@
   </div>
 
   <div class="moe-card" th:if="${moments == null or #lists.isEmpty(moments.items)}">
-    <p class="moe-empty">还没有瞬间，等待第一朵浪花 (｡･ω･｡)ﾉ♡</p>
+    <p class="moe-empty">No moments shared yet. Awaiting the first wave (｡･ω･｡)ﾉ♡</p>
   </div>
   <script>(function(){var n=document.querySelector('.moe-halo-num');if(n)n.textContent=document.querySelectorAll('.moe-mo-item').length;})();</script>
 </th:block>

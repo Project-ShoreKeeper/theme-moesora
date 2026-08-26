@@ -9,7 +9,7 @@
     </p>
 
     <p class="moe-footer-since" th:if="${theme.config.footer?.since != null and theme.config.footer?.since != ''}">
-      <span class="moe-since-ico"><th:block th:replace="~{modules/icons :: icon('sparkle')}"></th:block></span> 已建站 <span id="moe-run-since">…</span>
+      <span class="moe-since-ico"><th:block th:replace="~{modules/icons :: icon('sparkle')}"></th:block></span> Online for <span id="moe-run-since">…</span>
     </p>
 
     <p class="moe-footer-beian"
@@ -45,7 +45,7 @@
       var d = Math.floor(s/86400); s -= d*86400;
       var h = Math.floor(s/3600);  s -= h*3600;
       var m = Math.floor(s/60);    s -= m*60;
-      el.textContent = d+" 天 "+h+" 时 "+m+" 分 "+s+" 秒";
+      el.textContent = d+" d "+h+" h "+m+" m "+s+" s";
     }
     upd(); setInterval(upd, 1000);
   })();

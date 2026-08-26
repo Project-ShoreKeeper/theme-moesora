@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{modules/layout :: layout(content=~{::content}, hero=~{}, isHome=false)}">
 <body>
 <th:block th:fragment="content">
   <div class="moe-page-head moe-card moe-fancy-head">
-    <div class="moe-halo"><b class="moe-halo-num">0</b><small>个标签</small></div>
+    <div class="moe-halo"><b class="moe-halo-num">0</b><small>Tags</small></div>
     <div class="moe-fancy-head-text">
-      <h1 class="moe-page-title"><span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon('tag')}"></th:block></span><span>标签星云</span></h1>
-      <p class="moe-page-sub">在这片星海里，点亮你感兴趣的标签 ✨</p>
+      <h1 class="moe-page-title"><span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon('tag')}"></th:block></span><span>Tag Nebula</span></h1>
+      <p class="moe-page-sub">Navigate the constellation of topics ✨</p>
     </div>
   </div>
 
@@ -21,11 +21,11 @@
          th:href="${tag.status.permalink}"
          th:title="${tag.spec.displayName}">
         <span class="moe-tag-inner">
-          <span class="moe-tag-name" th:text="${tag.spec.displayName}">标签</span>
+          <span class="moe-tag-name" th:text="${tag.spec.displayName}">Tag</span>
           <span class="moe-tag-num" th:text="${tag.status?.postCount} ?: 0">0</span>
         </span>
       </a>
-      <p th:if="${#lists.isEmpty(tags)}" class="moe-empty">还没有标签 (｡･ω･｡)</p>
+      <p th:if="${#lists.isEmpty(tags)}" class="moe-empty">No tags found (｡･ω･｡)</p>
     </div>
   </div>
   <script>

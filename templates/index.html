@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org"
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
       th:replace="~{modules/layout :: layout(content=~{::content}, hero=~{::hero}, isHome=true)}">
 <body>
 <th:block th:fragment="hero">
@@ -20,7 +20,7 @@
         <span class="moe-typed-caret">▋</span>
       </p>
       <p class="moe-hero-sub" th:unless="${!#strings.isEmpty(theme.config.basic?.signature)}"
-         th:text="${site.subtitle}">少女祈祷中...</p>
+         th:text="${site.subtitle}">Starlight murmurs across the shore...</p>
     </div>
     <svg class="moe-hero-wave" viewBox="0 24 150 28" preserveAspectRatio="none">
       <defs>
@@ -61,7 +61,7 @@
     </th:block>
 
     <p th:if="${posts.items.isEmpty()}" class="moe-empty">
-      还没有文章，写一篇吧 (｡･ω･｡)
+      No posts published yet. Start writing one! (｡･ω･｡)
     </p>
   </div>
 

@@ -12,13 +12,13 @@
   </a>
   <div class="moe-post-body">
     <h2 class="moe-post-title">
-      <a th:href="${post.status.permalink}" th:text="${post.spec.title}">文章标题</a>
+      <a th:href="${post.status.permalink}" th:text="${post.spec.title}">Post Title</a>
     </h2>
     <p class="moe-post-excerpt" th:if="${post.status.excerpt}" th:text="${post.status.excerpt}"></p>
     <div class="moe-post-meta">
       <span class="moe-meta-item" th:if="${post.spec.publishTime != null}">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-        <span th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">日期</span>
+        <span th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">Date</span>
       </span>
       <span class="moe-meta-item">
         <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -38,7 +38,7 @@
             th:style="'color:' + ${heatColor}"
             th:text="${#numbers.formatDecimal(heat,0,1)} + '℃'">0℃</span>
       <a class="moe-post-cat" th:each="cat : ${post.categories}"
-         th:href="${cat.status.permalink}" th:text="${cat.spec.displayName}">分类</a>
+         th:href="${cat.status.permalink}" th:text="${cat.spec.displayName}">Category</a>
     </div>
   </div>
 </article>

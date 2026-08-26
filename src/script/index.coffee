@@ -7,8 +7,8 @@ do ->
   cfg = window.MoesoraConfig or {}
   # 标签页离开/返回文案
   originalTitle = document.title
-  hiddenTitle = cfg.hiddenTitle ? '(つ_<)~ 你去哪儿了！'   # 用 ? 区分「未配置」与「已清空」：清空则为 ''
-  visibleTitle = cfg.visibleTitle ? '(*´∇｀*) 欢迎回来！'
+  hiddenTitle = cfg.hiddenTitle ? '(つ_<)~ Where did you go!'   # 用 ? 区分「未配置」与「已清空」：清空则为 ''
+  visibleTitle = cfg.visibleTitle ? '(*´∇｀*) Welcome back!'
   visibleTimer = null
 
   applyDark = (dark) ->
@@ -89,7 +89,7 @@ do ->
   else
     document.addEventListener 'DOMContentLoaded', hideLoader
   setTimeout hideLoader, 3000
-  console.log '%c Moesora %c 少女祈祷中... ', 'background:#f9a8d4;color:#fff;padding:2px 6px;border-radius:4px 0 0 4px', 'background:#333;color:#fff;padding:2px 6px;border-radius:0 4px 4px 0'
+  console.log '%c Moesora %c Starlight whispers... ', 'background:#f9a8d4;color:#fff;padding:2px 6px;border-radius:4px 0 0 4px', 'background:#333;color:#fff;padding:2px 6px;border-radius:0 4px 4px 0'
   return
 # ---- 自包含图片灯箱（零依赖，不走任何 CDN；支持双击放大/拖动/长图滚动）----
 # ---- 导航栏无感退出：Halo 对 JSON Accept 的 POST /logout 返回 204，主题随后回到首页 ----
@@ -203,20 +203,20 @@ window.MoesoraLightbox = do ->
       '<div class="moe-lb-toolbar">' +
         '<span class="moe-lb-counter" data-role="counter"></span>' +
         '<span class="moe-lb-tools">' +
-          '<button class="moe-lb-tool" data-act="zoomout" type="button" aria-label="缩小" title="缩小">&#8722;</button>' +
-          '<button class="moe-lb-tool" data-act="zoomin" type="button" aria-label="放大" title="放大">&#43;</button>' +
-          '<button class="moe-lb-tool" data-act="rotate" type="button" aria-label="旋转" title="旋转"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>' +
-          '<button class="moe-lb-tool moe-lb-close" data-act="close" type="button" aria-label="关闭" title="关闭">&times;</button>' +
+          '<button class="moe-lb-tool" data-act="zoomout" type="button" aria-label="Zoom Out" title="Zoom Out">&#8722;</button>' +
+          '<button class="moe-lb-tool" data-act="zoomin" type="button" aria-label="Zoom In" title="Zoom In">&#43;</button>' +
+          '<button class="moe-lb-tool" data-act="rotate" type="button" aria-label="Rotate" title="Rotate"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg></button>' +
+          '<button class="moe-lb-tool moe-lb-close" data-act="close" type="button" aria-label="Close" title="Close">&times;</button>' +
         '</span>' +
       '</div>' +
-      '<button class="moe-lb-nav moe-lb-prev" type="button" aria-label="上一张">&#10094;</button>' +
+      '<button class="moe-lb-nav moe-lb-prev" type="button" aria-label="Previous">&#10094;</button>' +
       '<div class="moe-lb-stage" data-role="stage">' +
         '<div class="moe-lb-spin" data-role="spin"></div>' +
         '<img class="moe-lb-img" alt=""/>' +
       '</div>' +
-      '<button class="moe-lb-nav moe-lb-next" type="button" aria-label="下一张">&#10095;</button>' +
+      '<button class="moe-lb-nav moe-lb-next" type="button" aria-label="Next">&#10095;</button>' +
       '<div class="moe-lb-thumbs" data-role="thumbs"></div>' +
-      '<div class="moe-lb-tip"><span class="moe-lb-tip-pc">滚轮/双击缩放 · 拖动查看 · ← → 切换 · Esc 关闭</span><span class="moe-lb-tip-mb">双指缩放 · 上下滑动切换 · 双击放大</span></div>'
+      '<div class="moe-lb-tip"><span class="moe-lb-tip-pc">Scroll / Double-click to zoom · Drag to pan · ← → Navigate · Esc to close</span><span class="moe-lb-tip-mb">Pinch to zoom · Swipe up/down to navigate · Double-tap to zoom</span></div>'
     document.body.appendChild ov
     imgEl = ov.querySelector('.moe-lb-img')
     stage = ov.querySelector('[data-role="stage"]')
@@ -577,7 +577,7 @@ window.MoesoraInitPage = ->
         mins = Math.max(1, Math.round(words / 350))
         span = document.createElement('span')
         span.className = 'moe-meta-item moe-meta-rt'
-        span.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg><span>约 ' + words + ' 字 · ' + mins + ' 分钟</span>'
+        span.innerHTML = '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h9l5 5v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M9 9h6M9 13h6M9 17h3"/></svg><span>' + words + ' words · ' + mins + ' min read</span>'
         meta.appendChild span
     return
 
@@ -706,7 +706,7 @@ window.MoesoraInitPage = ->
         # 顶部 bar：三色点 + 语言名 + 折叠箭头 + 复制
         bar = document.createElement('div')
         bar.className = 'moe-code-bar'
-        bar.innerHTML = '<span class="moe-code-dots"><i></i><i></i><i></i></span>' + '<span class="moe-code-lang"></span>' + '<span class="moe-code-tools">' + '<button type="button" class="moe-code-btn moe-code-fold" title="折叠/展开">' + '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' + '</button>' + '<button type="button" class="moe-code-btn moe-copy-btn" title="复制">' + '<svg class="moe-ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' + '<svg class="moe-ico-done" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + '</button>' + '</span>'
+        bar.innerHTML = '<span class="moe-code-dots"><i></i><i></i><i></i></span>' + '<span class="moe-code-lang"></span>' + '<span class="moe-code-tools">' + '<button type="button" class="moe-code-btn moe-code-fold" title="Toggle Collapse">' + '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>' + '</button>' + '<button type="button" class="moe-code-btn moe-copy-btn" title="Copy Code">' + '<svg class="moe-ico-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' + '<svg class="moe-ico-done" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' + '</button>' + '</span>'
         bar.querySelector('.moe-code-lang').textContent = lang
         # 重组：bar + body(gutter + 可横向滚动的 code)
         body = document.createElement('div')
@@ -818,12 +818,12 @@ window.MoesoraInitPage = ->
             iexp = document.createElement('button')
             iexp.className = 'moe-fold-btn moe-img-fold-btn'
             iexp.type = 'button'
-            iexp.textContent = '展开长图 ▾'
+            iexp.textContent = 'Expand Image ▾'
             iexp.addEventListener 'click', (e) ->
               e.preventDefault()
               folded = wrap.classList.toggle('moe-img-fold')
               wrap.style.maxHeight = if folded then foldImgH + 'px' else 'none'
-              iexp.textContent = if folded then '展开长图 ▾' else '收起长图 ▴'
+              iexp.textContent = if folded then 'Expand Image ▾' else 'Collapse Image ▴'
               return
             wrap.appendChild iexp
             return
@@ -870,7 +870,7 @@ window.MoesoraInitPage = ->
       h = Math.floor(diff % 86400000 / 3600000)
       m = Math.floor(diff % 3600000 / 60000)
       s = Math.floor(diff % 60000 / 1000)
-      el.textContent = '已经在一起 ' + d + ' 天 ' + h + ' 时 ' + m + ' 分 ' + s + ' 秒 ♡'
+      el.textContent = 'Together for ' + d + 'd ' + h + 'h ' + m + 'm ' + s + 's ♡'
       return
 
     if window.__moeLoveTimer
@@ -1482,16 +1482,16 @@ do ->
     ov.className = 'moe-extlink-mask'
     ov.setAttribute 'hidden', ''
     ov.innerHTML = '<div class="moe-extlink" role="dialog" aria-modal="true">' +
-      '<h2 class="moe-extlink-title">外部链接跳转</h2>' +
-      '<p class="moe-extlink-sub">在您继续前往之前，请确认下方的链接</p>' +
+      '<h2 class="moe-extlink-title">External Link Notice</h2>' +
+      '<p class="moe-extlink-sub">Please verify the destination URL before proceeding</p>' +
       '<div class="moe-extlink-card">' +
-        '<div class="moe-extlink-warn"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><span>您即将离开 ' + esc(siteName) + '</span></div>' +
-        '<div class="moe-extlink-label">您将会被跳转到：</div>' +
+        '<div class="moe-extlink-warn"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6z"/></svg><span>You are about to leave ' + esc(siteName) + '</span></div>' +
+        '<div class="moe-extlink-label">Destination URL:</div>' +
         '<div class="moe-extlink-url"><span data-role="url"></span><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5"/></svg></div>' +
         '<div class="moe-extlink-bar"><div class="moe-extlink-fill" data-role="fill"></div></div>' +
         '<div class="moe-extlink-meta"><span data-role="count"></span><span data-role="pct">0%</span></div>' +
       '</div>' +
-      '<div class="moe-extlink-btns"><button type="button" class="moe-extlink-cancel" data-role="cancel">取消</button><button type="button" class="moe-extlink-go" data-role="go" disabled>点击跳转</button></div>' +
+      '<div class="moe-extlink-btns"><button type="button" class="moe-extlink-cancel" data-role="cancel">Cancel</button><button type="button" class="moe-extlink-go" data-role="go" disabled>Continue to site</button></div>' +
     '</div>'
     document.body.appendChild ov
     fillEl = ov.querySelector('[data-role="fill"]')
@@ -1512,12 +1512,12 @@ do ->
     goBtn.disabled = true
     fillEl.style.width = '0%'
     pctEl.textContent = '0%'
-    countEl.textContent = delay + ' 秒后可跳转'
+    countEl.textContent = delay + 's until redirect'
     ov.removeAttribute 'hidden'
     if delay <= 0
       fillEl.style.width = '100%'
       pctEl.textContent = '100%'
-      countEl.textContent = '现在可以跳转'
+      countEl.textContent = 'Click to continue'
       goBtn.disabled = false
       stop()
       return
@@ -1529,11 +1529,11 @@ do ->
       fillEl.style.width = pct + '%'
       pctEl.textContent = pct + '%'
       if remain <= 0
-        countEl.textContent = '现在可以跳转'
+        countEl.textContent = 'Click to continue'
         goBtn.disabled = false
         stop()
       else
-        countEl.textContent = remain + ' 秒后可跳转'
+        countEl.textContent = remain + 's until redirect'
       return), 1000
     return
 

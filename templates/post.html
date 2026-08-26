@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org" xmlns:halo="https://halo.run"
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:halo="https://halo.run"
       th:replace="~{modules/layout :: layout(content=~{::content}, hero=~{}, isHome=false)}">
 <body>
 <th:block th:fragment="content">
@@ -11,14 +11,14 @@
             th:style="'--hero-bg:url(' + ${acover} + ')'">
       <div class="moe-article-hero-cats" th:if="${post.categories != null and !post.categories.isEmpty()}">
         <a th:each="cat : ${post.categories}" th:href="${cat.status.permalink}"
-           th:text="${cat.spec.displayName}">分类</a>
+           th:text="${cat.spec.displayName}">Category</a>
       </div>
       <div class="moe-article-hero-inner">
-        <h1 class="moe-article-title" th:text="${post.spec.title}">文章标题</h1>
+        <h1 class="moe-article-title" th:text="${post.spec.title}">Article Title</h1>
         <div class="moe-article-meta moe-article-meta-hero">
           <span class="moe-meta-item" th:if="${post.spec.publishTime != null}">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            <span th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">日期</span>
+            <span th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">Date</span>
           </span>
           <span class="moe-meta-item" th:if="${post.stats != null}">
             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -38,19 +38,19 @@
 
     <!-- 无封面：普通标题 -->
     <div th:if="${#strings.isEmpty(acover)}" class="moe-article-head">
-      <h1 class="moe-article-title" th:text="${post.spec.title}">文章标题</h1>
+      <h1 class="moe-article-title" th:text="${post.spec.title}">Article Title</h1>
       <div class="moe-article-meta">
         <span th:if="${post.spec.publishTime != null}"
-              th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">日期</span>
+              th:text="${#temporals.format(post.spec.publishTime, 'yyyy-MM-dd', 'Asia/Shanghai')}">Date</span>
         <span th:if="${post.categories != null and !post.categories.isEmpty()}" class="moe-meta-sep">·</span>
         <a th:each="cat : ${post.categories}" class="moe-meta-cat moe-meta-item"
            th:href="${cat.status.permalink}">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h3.6l2 2.4H19a2 2 0 0 1 2 2V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/></svg>
-          <span th:text="${cat.spec.displayName}">分类</span></a>
+          <span th:text="${cat.spec.displayName}">Category</span></a>
       </div>
     </div>
 
-    <div class="moe-post-content" th:utext="${post.content.content}">正文</div>
+    <div class="moe-post-content" th:utext="${post.content.content}">Content</div>
 
     <div class="moe-article-tags" th:if="${post.tags != null and !post.tags.isEmpty()}">
       <a th:each="tag : ${post.tags}" class="moe-chip"
@@ -61,14 +61,14 @@
 
     <!-- 文章分享 -->
     <div class="moe-article-share" th:if="${theme.config.post?.enable_post_share}">
-      <span class="moe-share-label">分享到</span>
-      <button type="button" class="moe-share-btn" data-share="copy" title="复制链接">
+      <span class="moe-share-label">Share to</span>
+      <button type="button" class="moe-share-btn" data-share="copy" title="Copy Link">
         <th:block th:replace="~{modules/icons :: social('link')}"></th:block>
       </button>
-      <button type="button" class="moe-share-btn is-weibo" data-share="weibo" title="微博">
+      <button type="button" class="moe-share-btn is-weibo" data-share="weibo" title="Weibo">
         <th:block th:replace="~{modules/icons :: social('weibo')}"></th:block>
       </button>
-      <button type="button" class="moe-share-btn is-qq" data-share="qzone" title="QQ空间">
+      <button type="button" class="moe-share-btn is-qq" data-share="qzone" title="Qzone">
         <th:block th:replace="~{modules/icons :: social('qq')}"></th:block>
       </button>
       <button type="button" class="moe-share-btn is-telegram" data-share="telegram" title="Telegram">
@@ -106,25 +106,25 @@
     <!-- 打赏 -->
     <div class="moe-reward" th:if="${theme.config.post?.enable_reward} ?: false">
       <button type="button" class="moe-reward-btn" th:attr="data-name=${post.metadata.name}" onclick="this.nextElementSibling.hidden=!this.nextElementSibling.hidden">
-        ♥ 赞赏支持
+        ♥ Support / Sponsor
       </button>
       <div class="moe-reward-codes" hidden>
         <figure th:if="${theme.config.post?.reward_wechat}">
-          <img th:src="${theme.config.post.reward_wechat}" alt="微信"/>
-          <figcaption>微信</figcaption>
+          <img th:src="${theme.config.post.reward_wechat}" alt="WeChat"/>
+          <figcaption>WeChat</figcaption>
         </figure>
         <figure th:if="${theme.config.post?.reward_alipay}">
-          <img th:src="${theme.config.post.reward_alipay}" alt="支付宝"/>
-          <figcaption>支付宝</figcaption>
+          <img th:src="${theme.config.post.reward_alipay}" alt="Alipay"/>
+          <figcaption>Alipay</figcaption>
         </figure>
       </div>
     </div>
 
     <!-- 版权 -->
     <div class="moe-copyright" th:if="${theme.config.post?.enable_copyright} ?: true">
-      <p>本文采用知识共享署名协议，转载请注明出处。</p>
+      <p>This article is licensed under Creative Commons Attribution (CC BY). Please cite the original source.</p>
       <p th:if="${post.status.permalink}">
-        链接：<a th:href="${post.status.permalink}" th:text="${post.status.permalink}"></a>
+        Link: <a th:href="${post.status.permalink}" th:text="${post.status.permalink}"></a>
       </p>
     </div>
   </article>
@@ -133,7 +133,7 @@
   <section class="moe-card moe-comments" id="comments"
            th:with="csys=${theme.config.comment?.comment_system} ?: 'moesora'"
            th:if="${post.spec.allowComment and csys != 'none'}">
-    <h3 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('comment')}"></th:block></span>评论</h3>
+    <h3 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('comment')}"></th:block></span>Comments</h3>
 
     <!-- Moesora 内置评论（主题自带，调用 Halo 公开评论 API；游客昵称+QQ+邮箱） -->
     <div th:if="${csys == 'moesora'}" id="moe-comment" th:attr="data-name=${post.metadata.name}"></div>
