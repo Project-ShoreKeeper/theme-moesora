@@ -4,21 +4,81 @@
 <body>
 <th:block th:fragment="content">
   <div class="moe-page-head moe-card moe-fancy-head">
-    <div class="moe-halo"><b class="moe-halo-num">0</b><small>Friends</small></div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <div class="moe-halo"><b class="moe-orbit-count">0</b><small>Orbit</small></div>
+      <div class="moe-halo"><b class="moe-friend-count">0</b><small>Friends</small></div>
+    </div>
     <div class="moe-fancy-head-text">
-      <h1 class="moe-page-title"><span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span><span>Friend Links</span></h1>
-      <p class="moe-links-sub" id="moe-links-hitokoto">Connecting with creative minds across the web ♪(´▽｀)</p>
+      <h1 class="moe-page-title">
+        <span class="moe-page-title-icon"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span>
+        <span>Orbit &amp; Friends</span>
+      </h1>
+      <p class="moe-links-sub" id="moe-links-hitokoto">Constellations of software, creative portals, and kindred wanderers across the web.</p>
     </div>
   </div>
 
-  <th:block th:each="group,gStat : ${groups}">
-    <div class="moe-card moe-link-group" th:classappend="${'moe-accent-' + (gStat.index % 5)}">
-      <div class="moe-link-group-head">
-        <h3 class="moe-card-title" th:text="${group.spec.displayName}">Group</h3>
-        <span class="moe-link-count" th:text="${#lists.size(group.links)}">0</span>
-      </div>
+  <!-- ===== 1. Featured Orbit & Creations Section (Products & Sibling Sites) ===== -->
+  <div class="moe-card moe-link-group moe-accent-0 moe-orbit-section-wrap" style="margin-bottom: 20px;">
+    <div class="moe-link-group-head">
+      <h3 class="moe-card-title">
+        <span class="moe-title-ico">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M3.6 9h16.8M3.6 15h16.8"/>
+            <path d="M11.5 3a17 17 0 0 0 0 18M12.5 3a17 17 0 0 1 0 18"/>
+          </svg>
+        </span>
+        <span>✦ Featured Orbit &amp; Creations</span>
+      </h3>
+      <span class="moe-link-count moe-orbit-badge-count">0</span>
+    </div>
+
+    <!-- Orbit Groups Rendering -->
+    <th:block th:each="group : ${groups}"
+              th:if="${#strings.containsIgnoreCase(group.metadata.name, 'orbit') or #strings.containsIgnoreCase(group.metadata.name, 'project') or #strings.containsIgnoreCase(group.metadata.name, 'product') or #strings.containsIgnoreCase(group.spec.displayName, 'orbit') or #strings.containsIgnoreCase(group.spec.displayName, 'creation') or #strings.containsIgnoreCase(group.spec.displayName, 'sản phẩm')}">
       <div class="moe-link-list">
-        <a th:each="link,lStat : ${group.links}" class="moe-link-item"
+        <a th:each="link,lStat : ${group.links}" class="moe-link-item moe-orbit-item is-orbit-link"
+           th:style="|animation-delay:${lStat.index * 60}ms|"
+           th:href="${link.spec.url}" target="_blank" rel="noopener"
+           th:title="${link.spec.description}">
+          <span class="moe-link-logo-wrap">
+            <img class="moe-link-logo"
+                 th:if="${!#strings.isEmpty(link.spec.logo)}"
+                 th:src="${link.spec.logo}" th:alt="${link.spec.displayName}" loading="lazy"/>
+            <span th:if="${#strings.isEmpty(link.spec.logo)}"
+                  th:classappend="${'moe-avatar-c' + (lStat.index % 6)}"
+                  class="moe-link-logo moe-link-logo-fallback"
+                  th:text="${#strings.isEmpty(link.spec.displayName) ? '✦' : #strings.toUpperCase(#strings.substring(link.spec.displayName,0,1))}">✦</span>
+          </span>
+          <span class="moe-link-meta">
+            <span class="moe-link-name-row">
+              <span class="moe-link-name" th:text="${link.spec.displayName}">Site</span>
+              <span class="moe-orbit-badge">Project</span>
+            </span>
+            <span class="moe-link-desc" th:text="${link.spec.description}">Description</span>
+          </span>
+        </a>
+      </div>
+    </th:block>
+  </div>
+
+  <!-- ===== 2. Friend Links & Kindred Spirits Section (Community & Blog Exchanges) ===== -->
+  <div class="moe-card moe-link-group moe-accent-1 moe-friends-section-wrap" style="margin-bottom: 20px;">
+    <div class="moe-link-group-head">
+      <h3 class="moe-card-title">
+        <span class="moe-title-ico">
+          <th:block th:replace="~{modules/icons :: icon('heart')}"></th:block>
+        </span>
+        <span>✦ Friend Links &amp; Kindred Spirits</span>
+      </h3>
+      <span class="moe-link-count moe-friend-badge-count">0</span>
+    </div>
+
+    <!-- Friend Groups Rendering -->
+    <th:block th:each="group,gStat : ${groups}"
+              th:if="${!(#strings.containsIgnoreCase(group.metadata.name, 'orbit') or #strings.containsIgnoreCase(group.metadata.name, 'project') or #strings.containsIgnoreCase(group.metadata.name, 'product') or #strings.containsIgnoreCase(group.spec.displayName, 'orbit') or #strings.containsIgnoreCase(group.spec.displayName, 'creation') or #strings.containsIgnoreCase(group.spec.displayName, 'sản phẩm'))}">
+      <div class="moe-link-list">
+        <a th:each="link,lStat : ${group.links}" class="moe-link-item is-friend-link"
            th:style="|animation-delay:${lStat.index * 60}ms|"
            th:href="${link.spec.url}" target="_blank" rel="noopener"
            th:title="${link.spec.description}">
@@ -32,21 +92,23 @@
                   th:text="${#strings.isEmpty(link.spec.displayName) ? '?' : #strings.toUpperCase(#strings.substring(link.spec.displayName,0,1))}">A</span>
           </span>
           <span class="moe-link-meta">
-            <span class="moe-link-name" th:text="${link.spec.displayName}">Site</span>
-            <span class="moe-link-desc" th:text="${link.spec.description}">Description</span>
+            <span class="moe-link-name" th:text="${link.spec.displayName}">Friend Site</span>
+            <span class="moe-link-desc" th:text="${link.spec.description}">Friend Description</span>
           </span>
         </a>
       </div>
-    </div>
-  </th:block>
+    </th:block>
 
-  <div th:if="${groups == null or #lists.isEmpty(groups)}" class="moe-card moe-empty">
-    No links added yet in Console (｡･ω･｡)
+    <!-- Empty Friend notice -->
+    <div id="moe-friends-empty-notice" class="moe-empty" style="display:none; padding: 22px; text-align: center; color: var(--moe-muted); font-size: 13.5px;">
+      No friend links exchanged yet. Leave your info below to connect! ✿
+    </div>
   </div>
 
+  <!-- Link Exchange Application Card (Applies to Friends) -->
   <div class="moe-card moe-links-apply">
     <h3 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('heart')}"></th:block></span>Want to exchange links?</h3>
-    <p>Leave your <b>Site Name / URL / Avatar / Description</b> in the comments or Wish Wall, and I will gladly add you! (๑•̀ㅂ•́)و✧</p>
+    <p>Leave your <b>Site Name / URL / Avatar / Description</b> in the comments or Wish Wall, and I will gladly add you to the sanctuary! (๑•̀ㅂ•́)و✧</p>
   </div>
 
   <script>
@@ -54,24 +116,28 @@
     var lines=[
       "Connecting with creative minds across the web ♪(´▽｀)",
       "Click an avatar to explore their tranquil world~",
-      "Here lie my treasured bookmarks across the vast sea ✿",
+      "Treasured creations & bookmarks across the vast sea ✿",
       "May you find kindred spirits beneath the starry expanse ✨",
       "Destiny brought us together upon this quiet shore (｡･ω･｡)ﾉ♡",
       "The vessel of friendship sails gently forward ⚓",
       "Wandering through digital streams, all wanderers are friends ✿",
       "To meet is serendipity; thank you for pausing here (´▽｀)ノ",
-      "These are our cherished digital neighbors across the stars~",
-      "Open a portal and discover a new starlit world ✨",
-      "Kindred minds meeting in resonance ♪",
-      "May the world treat us with tender warmth (｡◕‿◕｡)",
-      "Illuminating each other across the quiet void ⋆｡°✩",
-      "Let us journey into cyberspace together 🚀",
-      "Feel free to visit often; the sanctuary doors are open~",
-      "A quiet ripple carrying boundless warmth (◍•ᴗ•◍)"
+      "Kindred minds meeting in resonance ♪"
     ];
     var h=document.getElementById('moe-links-hitokoto'); if(h){h.textContent=lines[Math.floor(Math.random()*lines.length)];}
-    var n=document.querySelector('.moe-halo-num'); if(n){n.textContent=document.querySelectorAll('.moe-link-item').length;}
     
+    var orbitCount = document.querySelectorAll('.is-orbit-link').length;
+    var friendCount = document.querySelectorAll('.is-friend-link').length;
+
+    var obCountEl = document.querySelector('.moe-orbit-count'); if(obCountEl) obCountEl.textContent = orbitCount;
+    var frCountEl = document.querySelector('.moe-friend-count'); if(frCountEl) frCountEl.textContent = friendCount;
+    var obBadge = document.querySelector('.moe-orbit-badge-count'); if(obBadge) obBadge.textContent = orbitCount;
+    var frBadge = document.querySelector('.moe-friend-badge-count'); if(frBadge) frBadge.textContent = friendCount;
+
+    var emptyFriendNotice = document.getElementById('moe-friends-empty-notice');
+    if (emptyFriendNotice && friendCount === 0) {
+      emptyFriendNotice.style.display = 'block';
+    }
   })();
   </script>
 </th:block>

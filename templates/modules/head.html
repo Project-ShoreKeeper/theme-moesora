@@ -356,6 +356,45 @@
     }
     .dark .moe-sidebar-orbit-tag { color: #94a3b8; }
 
+    /* Orbit / Projects Badge and Row */
+    .moe-link-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      width: 100%;
+    }
+    .moe-orbit-badge {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.14);
+      color: #0284c7;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      flex-shrink: 0;
+      text-decoration: none !important;
+    }
+    .dark .moe-orbit-badge {
+      background: rgba(56, 189, 248, 0.2);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+    .moe-orbit-item {
+      border: 1px solid rgba(56, 189, 248, 0.22) !important;
+      background: rgba(56, 189, 248, 0.03) !important;
+    }
+    .dark .moe-orbit-item {
+      border-color: rgba(56, 189, 248, 0.2) !important;
+      background: rgba(30, 41, 59, 0.5) !important;
+    }
+    .moe-orbit-item:hover {
+      border-color: #38bdf8 !important;
+      box-shadow: 0 8px 24px rgba(56, 189, 248, 0.2) !important;
+    }
+
     /* ===== Shorekeeper Cosmic Particle Canvas ===== */
     .shore-cosmos-canvas {
       position: fixed !important;
