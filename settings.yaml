@@ -634,7 +634,7 @@ spec:
         value: sakura
       - label: Falling Snowflakes
         value: snow
-      - label: Cosmic Starlight
+      - label: ✦ Shorekeeper Cosmic Stream (Shooting Stars)
         value: universe
     - $formkit: select
       name: effects_bg_mode

@@ -252,19 +252,28 @@
   })();
   </script>
 
-  <!-- ===== Shorekeeper Bespoke Cosmic Particle Engine ===== -->
-  <canvas id="shore-cosmos-canvas" class="shore-cosmos-canvas"></canvas>
-  <script>
-  (function(){
-    var canvas = document.getElementById("shore-cosmos-canvas");
-    if (!canvas) return;
-    var ctx = canvas.getContext("2d");
-    var W = 0, H = 0, dpr = 1;
-    var stars = [];
-    var meteors = [];
-    var maxStars = 95;
-    var isRunning = true;
-    var nextMeteorTime = Date.now() + 1200;
+  <!-- ===== Shorekeeper Bespoke Cosmic Particle Engine (Tied to Console -> Themes -> Settings -> Effects) ===== -->
+  <th:block th:if="${theme.config.effects?.effects_bg == 'universe'}">
+    <canvas id="shore-cosmos-canvas" class="shore-cosmos-canvas"></canvas>
+    <script th:inline="javascript">
+    (function(){
+      var mode = /*[[${theme.config.effects?.effects_bg_mode} ?: 'all']]*/ 'all';
+      var canvas = document.getElementById("shore-cosmos-canvas");
+      if (!canvas) return;
+      var ctx = canvas.getContext("2d");
+      var W = 0, H = 0, dpr = 1;
+      var stars = [];
+      var meteors = [];
+      var maxStars = 95;
+      var isRunning = true;
+      var nextMeteorTime = Date.now() + 1200;
+
+      function shouldDisplay() {
+        var isDark = document.documentElement.classList.contains("dark");
+        if (mode === "light") return !isDark;
+        if (mode === "dark") return isDark;
+        return true;
+      }
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -462,6 +471,7 @@
     });
   })();
   </script>
+  </th:block>
 
   <!-- 页脚 -->
   <div th:replace="~{modules/footer :: footer}"></div>
