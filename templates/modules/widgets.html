@@ -141,49 +141,32 @@
     <p class="moe-card-body" th:utext="${!#strings.isEmpty(theme.config.sidebar?.about_content) ? theme.config.sidebar.about_content : 'A tranquil sanctuary beneath the starry sky.'}">A tranquil sanctuary beneath the starry sky.</p>
   </section>
 
-  <!-- 友链 & 星座 Orbit 导航 -->
+  <!-- 友链 & 星座 Orbit 导航（100% Console 驱动） -->
   <section th:case="'links'" class="moe-card moe-orbit-sidebar-card">
     <div class="moe-cat-head">
       <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span>Constellation &amp; Orbit</h4>
       <a class="moe-cat-more" th:href="@{/links}">All Projects »</a>
     </div>
-    <!-- If plugin-links has groups, render them -->
-    <div th:if="${pluginFinder.available('PluginLinks') and linkFinder.groupBy() != null and !linkFinder.groupBy().isEmpty()}"
-         class="moe-friend-list"
-         th:style="'--moe-links-limit:' + (${theme.config.sidebar?.links_limit} ?: 0)">
+    <div class="moe-sidebar-orbit-list"
+         th:if="${pluginFinder.available('PluginLinks') and linkFinder.groupBy() != null and !linkFinder.groupBy().isEmpty()}"
+         th:style="'--moe-links-limit:' + (${theme.config.sidebar?.links_limit} ?: 5)">
       <th:block th:each="group : ${linkFinder.groupBy()}">
-        <a th:each="link : ${group.links}" class="moe-friend-item"
+        <a th:each="link,lStat : ${group.links}" class="moe-sidebar-orbit-item"
            th:href="${link.spec.url}" target="_blank" rel="noopener"
            th:title="${link.spec.description}">
-          <span class="moe-friend-name" th:text="${link.spec.displayName}">Link</span>
-          <span class="moe-friend-host" th:text="${link.spec.description}">Description</span>
+          <span class="moe-sidebar-orbit-icon">
+            <img th:if="${!#strings.isEmpty(link.spec.logo)}" th:src="${link.spec.logo}" th:alt="${link.spec.displayName}" style="width:100%;height:100%;object-fit:cover;border-radius:8px;" loading="lazy"/>
+            <span th:if="${#strings.isEmpty(link.spec.logo)}" th:text="${#strings.isEmpty(link.spec.displayName) ? '✦' : #strings.toUpperCase(#strings.substring(link.spec.displayName,0,1))}">✦</span>
+          </span>
+          <div class="moe-sidebar-orbit-info">
+            <div class="moe-sidebar-orbit-name" th:text="${link.spec.displayName}">Website Name</div>
+            <div class="moe-sidebar-orbit-tag" th:text="${!#strings.isEmpty(link.spec.description) ? link.spec.description : link.spec.url}">Description</div>
+          </div>
         </a>
       </th:block>
     </div>
-    <!-- Featured Orbit projects (always visible / fallback) -->
-    <div th:if="${!pluginFinder.available('PluginLinks') or linkFinder.groupBy() == null or linkFinder.groupBy().isEmpty()}"
-         class="moe-sidebar-orbit-list">
-      <a class="moe-sidebar-orbit-item" href="https://github.com/Project-ShoreKeeper/Shore-Assistant" target="_blank" rel="noopener">
-        <div class="moe-sidebar-orbit-icon">🦋</div>
-        <div class="moe-sidebar-orbit-info">
-          <div class="moe-sidebar-orbit-name">Shore Assistant</div>
-          <div class="moe-sidebar-orbit-tag">AI Realtime Companion</div>
-        </div>
-      </a>
-      <a class="moe-sidebar-orbit-item" href="https://github.com/Project-ShoreKeeper/Shore-Obsidian" target="_blank" rel="noopener">
-        <div class="moe-sidebar-orbit-icon">🔮</div>
-        <div class="moe-sidebar-orbit-info">
-          <div class="moe-sidebar-orbit-name">Shore Obsidian</div>
-          <div class="moe-sidebar-orbit-tag">Knowledge &amp; Lore Vault</div>
-        </div>
-      </a>
-      <a class="moe-sidebar-orbit-item" href="https://github.com/LuminaryLuna06/HomeFit" target="_blank" rel="noopener">
-        <div class="moe-sidebar-orbit-icon">⚡</div>
-        <div class="moe-sidebar-orbit-info">
-          <div class="moe-sidebar-orbit-name">HomeFit Platform</div>
-          <div class="moe-sidebar-orbit-tag">Fitness &amp; Health Engine</div>
-        </div>
-      </a>
+    <div th:if="${!pluginFinder.available('PluginLinks') or linkFinder.groupBy() == null or linkFinder.groupBy().isEmpty()}" class="moe-muted-text" style="padding:10px 0;font-size:12px;text-align:center;">
+      No links added yet in Console (｡･ω･｡)
     </div>
   </section>
 

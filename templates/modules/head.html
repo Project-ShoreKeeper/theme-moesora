@@ -261,85 +261,99 @@
     .moe-stp-vol-wrap { display: flex; align-items: center; gap: 6px; }
     .moe-stp-vol { width: 64px; height: 4px; accent-color: #38bdf8; cursor: pointer; }
 
-    /* ===== Featured Orbit & Projects Showcase Grid ===== */
-    .moe-orbit-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-      gap: 14px; margin-top: 12px;
+    /* ===== Links & Friend Cards Aesthetic Styling ===== */
+    .moe-link-item, .moe-link-item *,
+    .moe-friend-item, .moe-friend-item *,
+    .moe-sidebar-orbit-item, .moe-sidebar-orbit-item * {
+      text-decoration: none !important;
     }
-    .moe-orbit-card {
-      display: flex; flex-direction: column; padding: 14px;
-      border-radius: 14px; background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(56, 189, 248, 0.22);
-      text-decoration: none; color: inherit;
-      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+    .moe-link-item {
+      background: rgba(255, 255, 255, 0.72) !important;
+      backdrop-filter: blur(12px) !important;
+      -webkit-backdrop-filter: blur(12px) !important;
+      border: 1px solid rgba(56, 189, 248, 0.22) !important;
+      border-radius: 16px !important;
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease, filter 0.25s ease !important;
     }
-    .dark .moe-orbit-card {
-      background: rgba(15, 23, 42, 0.7);
-      border-color: rgba(56, 189, 248, 0.2);
+    .dark .moe-link-item {
+      background: rgba(15, 23, 42, 0.7) !important;
+      border-color: rgba(56, 189, 248, 0.2) !important;
     }
-    .moe-orbit-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 28px rgba(56, 189, 248, 0.2), 0 0 15px rgba(56, 189, 248, 0.15);
-      border-color: #38bdf8;
+    .moe-link-item:hover {
+      text-decoration: none !important;
+      transform: translateY(-4px) !important;
+      background: #ffffff !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 14px 34px rgba(56, 189, 248, 0.28), 0 0 20px rgba(56, 189, 248, 0.18) !important;
+      filter: brightness(1.05) !important;
     }
-    .moe-orbit-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-    .moe-orbit-icon {
-      width: 40px; height: 40px; border-radius: 10px; display: flex;
-      align-items: center; justify-content: center; font-size: 20px;
-      background: rgba(56, 189, 248, 0.12); color: #38bdf8; flex-shrink: 0;
+    .dark .moe-link-item:hover {
+      background: rgba(30, 41, 59, 0.95) !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 14px 34px rgba(56, 189, 248, 0.35), 0 0 20px rgba(56, 189, 248, 0.25) !important;
+      filter: brightness(1.12) !important;
     }
-    .moe-orbit-title-wrap { flex: 1; min-width: 0; }
-    .moe-orbit-title {
-      font-size: 14.5px; font-weight: 700; color: var(--moe-text, #0f172a);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    .moe-link-name {
+      color: var(--moe-text, #0f172a) !important;
+      font-weight: 700 !important;
+      text-decoration: none !important;
     }
-    .dark .moe-orbit-title { color: #f8fafc; }
-    .moe-orbit-badge {
-      display: inline-block; font-size: 10px; font-weight: 600;
-      padding: 1px 7px; border-radius: 999px;
-      background: rgba(56, 189, 248, 0.15); color: #0284c7; margin-top: 2px;
+    .dark .moe-link-name {
+      color: #f8fafc !important;
     }
-    .dark .moe-orbit-badge { color: #7dd3fc; }
-    .moe-orbit-desc {
-      font-size: 12px; color: var(--moe-muted, #64748b);
-      line-height: 1.45; margin-bottom: 10px; flex: 1;
+    .moe-link-desc {
+      color: var(--moe-muted, #64748b) !important;
+      text-decoration: none !important;
     }
-    .dark .moe-orbit-desc { color: #94a3b8; }
-    .moe-orbit-footer {
-      display: flex; align-items: center; justify-content: space-between;
-      font-size: 11px; color: var(--moe-theme, #38bdf8); font-weight: 600;
-      padding-top: 8px; border-top: 1px solid rgba(56, 189, 248, 0.15);
+    .dark .moe-link-desc {
+      color: #94a3b8 !important;
     }
 
-    /* Sidebar Orbit Widget */
+    /* Sidebar Friend / Orbit Items */
     .moe-sidebar-orbit-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
     .moe-sidebar-orbit-item {
-      display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-      border-radius: 10px; background: rgba(56, 189, 248, 0.06);
-      border: 1px solid rgba(56, 189, 248, 0.18);
-      text-decoration: none; color: inherit; transition: all 0.2s ease;
+      display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+      border-radius: 12px; background: rgba(56, 189, 248, 0.06) !important;
+      border: 1px solid rgba(56, 189, 248, 0.18) !important;
+      text-decoration: none !important; color: inherit !important;
+      transition: all 0.22s ease !important;
     }
     .dark .moe-sidebar-orbit-item {
-      background: rgba(56, 189, 248, 0.08);
-      border-color: rgba(56, 189, 248, 0.15);
+      background: rgba(56, 189, 248, 0.08) !important;
+      border-color: rgba(56, 189, 248, 0.15) !important;
     }
     .moe-sidebar-orbit-item:hover {
-      background: rgba(56, 189, 248, 0.16);
-      border-color: #38bdf8; transform: translateX(3px);
+      background: #ffffff !important;
+      border-color: #38bdf8 !important;
+      transform: translateX(4px) !important;
+      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.22) !important;
+      filter: brightness(1.05) !important;
+      text-decoration: none !important;
+    }
+    .dark .moe-sidebar-orbit-item:hover {
+      background: rgba(30, 41, 59, 0.95) !important;
+      border-color: #38bdf8 !important;
+      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.3) !important;
+      filter: brightness(1.1) !important;
     }
     .moe-sidebar-orbit-icon {
-      width: 30px; height: 30px; border-radius: 8px; display: flex;
+      width: 32px; height: 32px; border-radius: 8px; display: flex;
       align-items: center; justify-content: center; font-size: 15px;
       background: rgba(56, 189, 248, 0.14); color: #38bdf8; flex-shrink: 0;
+      overflow: hidden;
     }
     .moe-sidebar-orbit-info { flex: 1; min-width: 0; }
     .moe-sidebar-orbit-name {
-      font-size: 12.5px; font-weight: 600; color: var(--moe-text, #0f172a);
+      font-size: 13px; font-weight: 700; color: var(--moe-text, #0f172a);
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-decoration: none !important;
     }
     .dark .moe-sidebar-orbit-name { color: #f1f5f9; }
-    .moe-sidebar-orbit-tag { font-size: 10px; color: var(--moe-muted, #64748b); }
+    .moe-sidebar-orbit-tag {
+      font-size: 10.5px; color: var(--moe-muted, #64748b);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      text-decoration: none !important;
+    }
     .dark .moe-sidebar-orbit-tag { color: #94a3b8; }
   </style>
 
