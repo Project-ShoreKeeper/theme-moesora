@@ -99,30 +99,40 @@
 
   <!-- 音乐播放器（侧栏模式：仅在未开启"悬浮"时显示） -->
   <section th:case="'music'" class="moe-card moe-music-card"
-           th:if="${(theme.config.sidebar?.music_enable ?: false) and !(theme.config.sidebar?.music_float ?: false)}"
-           th:with="mId=${theme.config.sidebar?.netease_playlist_id}">
-    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('music')}"></th:block></span>Music</h4>
-    <!-- SoundCloud Embed -->
-    <div th:if="${mId != null and #strings.contains(mId, 'soundcloud.com')}" style="padding:6px 0;text-align:center;">
-      <iframe width="100%" height="166" scrolling="no" frameborder="no" allow="autoplay; encrypted-media" style="border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" src="https://w.soundcloud.com/player/?url=https%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F1927059356&color=%2338bdf8&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false"></iframe>
-      <div style="font-size:12px;font-weight:600;margin-top:6px;color:var(--moe-theme, #38bdf8);">✨ Astrum Unicum · Shorekeeper Theme</div>
+           th:if="${(theme.config.sidebar?.music_enable ?: false) and !(theme.config.sidebar?.music_float ?: false)}">
+    <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('music')}"></th:block></span>Astrum Unicum</h4>
+    <div class="moe-starlight-sidebar-player" style="padding:6px 0;">
+      <div class="moe-stp-card" id="moe-stp-sb-card">
+        <div class="moe-stp-top">
+          <div class="moe-stp-cover-wrap">
+            <img class="moe-stp-cover" th:src="${theme.config.sidebar?.profile_avatar} ?: @{/assets/dist/logo.svg}" alt="Astrum Unicum"/>
+            <div class="moe-stp-eq" id="moe-stp-sb-eq">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="moe-stp-info">
+            <div class="moe-stp-title">Astrum Unicum</div>
+            <div class="moe-stp-artist">Shorekeeper Theme · Vanguard Sound</div>
+          </div>
+        </div>
+        <div class="moe-stp-seek">
+          <div class="moe-stp-seek-bar" id="moe-stp-sb-seek">
+            <div class="moe-stp-seek-fill" id="moe-stp-sb-fill"></div>
+          </div>
+          <div class="moe-stp-time">
+            <span id="moe-stp-sb-cur">0:00</span>
+            <span id="moe-stp-sb-dur">0:00</span>
+          </div>
+        </div>
+        <div class="moe-stp-ctrls">
+          <button type="button" class="moe-stp-btn moe-stp-play" id="moe-stp-sb-playbtn" aria-label="Play/Pause">
+            <svg class="moe-stp-ico-play" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="moe-stp-ico-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <audio id="moe-sb-audio" th:src="@{/assets/audio/astrum-unicum.m4a}" preload="metadata" loop></audio>
+        </div>
+      </div>
     </div>
-    <!-- NetEase Official Player -->
-    <div th:if="${mId != null and (#strings.startsWith(mId, '2183') or #strings.startsWith(mId, '2021') or #strings.contains(mId, 'music.163.com')) and !#strings.contains(mId, 'soundcloud.com')}" style="padding:6px 0;text-align:center;">
-      <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="100%" height="86" style="border-radius:10px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" src="//music.163.com/outchain/player?type=2&id=2183204968&auto=0&height=66"></iframe>
-      <div style="font-size:12px;font-weight:600;margin-top:6px;color:var(--moe-theme, #38bdf8);">✨ Astrum Unicum · Shorekeeper Theme</div>
-    </div>
-    <!-- YouTube Embed -->
-    <div th:if="${mId != null and (#strings.contains(mId, 'youtu') or #strings.contains(mId, 'youtube')) and !#strings.contains(mId, 'soundcloud.com')}" style="padding:6px 0;text-align:center;">
-      <iframe style="border-radius:10px;width:100%;aspect-ratio:16/9;box-shadow:0 4px 12px rgba(0,0,0,0.15);" src="https://www.youtube-nocookie.com/embed/ErE1Wd540fI" title="Astrum Unicum / Stars, Rebirth, and You" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <div style="font-size:12px;font-weight:600;margin-top:6px;color:var(--moe-theme, #38bdf8);">✨ Astrum Unicum · Shorekeeper Theme</div>
-    </div>
-    <!-- MetingJS -->
-    <meting-js th:if="${mId == null or (!#strings.contains(mId, 'soundcloud.com') and !#strings.contains(mId, 'youtu') and !#strings.contains(mId, 'youtube') and !#strings.startsWith(mId, '2183') and !#strings.startsWith(mId, '2021') and !#strings.contains(mId, 'music.163.com'))}"
-               server="netease" type="playlist"
-               th:attr="id=${mId}"
-               fixed="false" mini="false" autoplay="false" order="list" preload="none"
-               list-folded="true" list-max-height="180px"></meting-js>
   </section>
 
   <!-- 关于 -->
@@ -131,24 +141,49 @@
     <p class="moe-card-body" th:utext="${!#strings.isEmpty(theme.config.sidebar?.about_content) ? theme.config.sidebar.about_content : 'A tranquil sanctuary beneath the starry sky.'}">A tranquil sanctuary beneath the starry sky.</p>
   </section>
 
-  <!-- 友链 -->
-  <section th:case="'links'" class="moe-card" th:if="${pluginFinder.available('PluginLinks')}"
-           th:with="linkGroups=${linkFinder.groupBy()}">
+  <!-- 友链 & 星座 Orbit 导航 -->
+  <section th:case="'links'" class="moe-card moe-orbit-sidebar-card">
     <div class="moe-cat-head">
-      <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span>Friend Links</h4>
-      <a class="moe-cat-more" th:href="@{/links}">More »</a>
+      <h4 class="moe-card-title"><span class="moe-title-ico"><th:block th:replace="~{modules/icons :: icon('link')}"></th:block></span>Constellation &amp; Orbit</h4>
+      <a class="moe-cat-more" th:href="@{/links}">All Projects »</a>
     </div>
-    <div class="moe-friend-list"
+    <!-- If plugin-links has groups, render them -->
+    <div th:if="${pluginFinder.available('PluginLinks') and linkFinder.groupBy() != null and !linkFinder.groupBy().isEmpty()}"
+         class="moe-friend-list"
          th:style="'--moe-links-limit:' + (${theme.config.sidebar?.links_limit} ?: 0)">
-      <th:block th:each="group : ${linkGroups}">
+      <th:block th:each="group : ${linkFinder.groupBy()}">
         <a th:each="link : ${group.links}" class="moe-friend-item"
            th:href="${link.spec.url}" target="_blank" rel="noopener"
-           th:title="${link.spec.description}"
-           th:with="raw=${#strings.replace(#strings.replace(link.spec.url,'https://',''),'http://','')}">
+           th:title="${link.spec.description}">
           <span class="moe-friend-name" th:text="${link.spec.displayName}">Link</span>
-          <span class="moe-friend-host" th:text="${#strings.contains(raw,'/') ? #strings.substringBefore(raw,'/') : raw}">domain</span>
+          <span class="moe-friend-host" th:text="${link.spec.description}">Description</span>
         </a>
       </th:block>
+    </div>
+    <!-- Featured Orbit projects (always visible / fallback) -->
+    <div th:if="${!pluginFinder.available('PluginLinks') or linkFinder.groupBy() == null or linkFinder.groupBy().isEmpty()}"
+         class="moe-sidebar-orbit-list">
+      <a class="moe-sidebar-orbit-item" href="https://github.com/Project-ShoreKeeper/Shore-Assistant" target="_blank" rel="noopener">
+        <div class="moe-sidebar-orbit-icon">🦋</div>
+        <div class="moe-sidebar-orbit-info">
+          <div class="moe-sidebar-orbit-name">Shore Assistant</div>
+          <div class="moe-sidebar-orbit-tag">AI Realtime Companion</div>
+        </div>
+      </a>
+      <a class="moe-sidebar-orbit-item" href="https://github.com/Project-ShoreKeeper/Shore-Obsidian" target="_blank" rel="noopener">
+        <div class="moe-sidebar-orbit-icon">🔮</div>
+        <div class="moe-sidebar-orbit-info">
+          <div class="moe-sidebar-orbit-name">Shore Obsidian</div>
+          <div class="moe-sidebar-orbit-tag">Knowledge &amp; Lore Vault</div>
+        </div>
+      </a>
+      <a class="moe-sidebar-orbit-item" href="https://github.com/LuminaryLuna06/HomeFit" target="_blank" rel="noopener">
+        <div class="moe-sidebar-orbit-icon">⚡</div>
+        <div class="moe-sidebar-orbit-info">
+          <div class="moe-sidebar-orbit-name">HomeFit Platform</div>
+          <div class="moe-sidebar-orbit-tag">Fitness &amp; Health Engine</div>
+        </div>
+      </a>
     </div>
   </section>
 

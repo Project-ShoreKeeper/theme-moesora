@@ -64,14 +64,53 @@
   </div><!-- /#moe-pjax -->
 
   <!-- 全局悬浮音乐播放器：放在 #moe-pjax 外，Pjax 切页不中断播放；点 🎵 浮标弹出播放器 -->
+  <!-- 全局悬浮音乐播放器：放在 #moe-pjax 外，Pjax 切页不中断播放；点 🎵 浮标弹出播放器 -->
   <div class="moe-music-float" id="moe-music-float"
        th:if="${(theme.config.sidebar?.music_enable ?: false) and (theme.config.sidebar?.music_float ?: false)}">
-    <div class="moe-music-float-body">
-      <meting-js server="netease" type="playlist"
-                 th:attr="id=${theme.config.sidebar?.netease_playlist_id}"
-                 fixed="false" mini="false" autoplay="false" order="list" preload="none"
-                 list-folded="true" list-max-height="200px"></meting-js>
+    <div class="moe-music-float-body moe-starlight-player">
+      <div class="moe-stp-card" id="moe-stp-card">
+        <!-- Top row: Cover + Title + Artist + Equalizer -->
+        <div class="moe-stp-top">
+          <div class="moe-stp-cover-wrap">
+            <img class="moe-stp-cover" th:src="${theme.config.sidebar?.profile_avatar} ?: @{/assets/dist/logo.svg}" alt="Astrum Unicum"/>
+            <div class="moe-stp-eq" id="moe-stp-eq">
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="moe-stp-info">
+            <div class="moe-stp-title">Astrum Unicum</div>
+            <div class="moe-stp-artist">Shorekeeper Theme · Vanguard Sound</div>
+          </div>
+        </div>
+        <!-- Progress Bar & Time -->
+        <div class="moe-stp-seek">
+          <div class="moe-stp-seek-bar" id="moe-stp-seek">
+            <div class="moe-stp-seek-fill" id="moe-stp-fill"></div>
+          </div>
+          <div class="moe-stp-time">
+            <span id="moe-stp-cur">0:00</span>
+            <span id="moe-stp-dur">0:00</span>
+          </div>
+        </div>
+        <!-- Controls row -->
+        <div class="moe-stp-ctrls">
+          <button type="button" class="moe-stp-btn moe-stp-play" id="moe-stp-playbtn" aria-label="Play/Pause">
+            <svg class="moe-stp-ico-play" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <svg class="moe-stp-ico-pause" viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+          </button>
+          <div class="moe-stp-vol-wrap">
+            <button type="button" class="moe-stp-btn moe-stp-mute" id="moe-stp-mutebtn" aria-label="Mute/Unmute">
+              <svg class="moe-stp-ico-vol" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+              <svg class="moe-stp-ico-muted" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+            </button>
+            <input type="range" class="moe-stp-vol" id="moe-stp-vol" min="0" max="1" step="0.05" value="0.8"/>
+          </div>
+        </div>
+      </div>
+      <!-- Native HTML5 audio stream pointing directly to local theme assets -->
+      <audio id="moe-native-audio" th:src="@{/assets/audio/astrum-unicum.m4a}" preload="metadata" loop></audio>
     </div>
+    <!-- Floating FAB -->
     <button class="moe-music-fab" id="moe-music-fab" type="button" aria-label="Music Player">
       <svg class="moe-music-ring" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
         <circle class="moe-music-track" cx="24" cy="24" r="21"/>
@@ -82,29 +121,134 @@
   </div>
   <script>
   (function(){
-    var f=document.getElementById("moe-music-float");
-    var b=document.getElementById("moe-music-fab");
-    if(!f||!b) return;
-    b.addEventListener("click",function(e){ e.stopPropagation(); f.classList.toggle("open"); });
-    /* 播放进度环：等 meting-js 生成 APlayer 后，按当前曲目进度更新环 */
-    var prog=b.querySelector(".moe-music-prog");
-    var C=131.95; /* 2 * PI * 21 */
-    function setP(p){ if(!prog) return; if(!(p>=0)) p=0; if(p>1) p=1; prog.style.strokeDashoffset=(C*(1-p)).toFixed(1); }
-    setP(0);
-    var tries=0, timer=setInterval(function(){
-      var mt=f.querySelector("meting-js");
-      var ap=mt && mt.aplayer;
-      if(ap && ap.audio){
-        clearInterval(timer);
-        var au=ap.audio;
-        var upd=function(){ var d=au.duration; setP(d&&isFinite(d)&&d>0 ? au.currentTime/d : 0); };
-        au.addEventListener("timeupdate",upd);
-        au.addEventListener("loadedmetadata",upd);
-        au.addEventListener("ended",function(){ setP(0); });
-        upd();
+    var floatWrap = document.getElementById("moe-music-float");
+    var fab = document.getElementById("moe-music-fab");
+    var audio = document.getElementById("moe-native-audio");
+    if (!floatWrap || !fab || !audio) return;
+
+    var card = document.getElementById("moe-stp-card");
+    var playBtn = document.getElementById("moe-stp-playbtn");
+    var icoPlay = playBtn && playBtn.querySelector(".moe-stp-ico-play");
+    var icoPause = playBtn && playBtn.querySelector(".moe-stp-ico-pause");
+    var seekBar = document.getElementById("moe-stp-seek");
+    var fill = document.getElementById("moe-stp-fill");
+    var curTime = document.getElementById("moe-stp-cur");
+    var durTime = document.getElementById("moe-stp-dur");
+    var muteBtn = document.getElementById("moe-stp-mutebtn");
+    var icoVol = muteBtn && muteBtn.querySelector(".moe-stp-ico-vol");
+    var icoMuted = muteBtn && muteBtn.querySelector(".moe-stp-ico-muted");
+    var volSlider = document.getElementById("moe-stp-vol");
+    var prog = fab.querySelector(".moe-music-prog");
+    var CIRCUMFERENCE = 131.95;
+
+    function formatTime(s) {
+      if (isNaN(s) || s < 0) return "0:00";
+      var m = Math.floor(s / 60);
+      var sec = Math.floor(s % 60);
+      return m + ":" + (sec < 10 ? "0" : "") + sec;
+    }
+
+    function setRingProgress(p) {
+      if (!prog) return;
+      if (!(p >= 0)) p = 0;
+      if (p > 1) p = 1;
+      prog.style.strokeDashoffset = (CIRCUMFERENCE * (1 - p)).toFixed(1);
+    }
+    setRingProgress(0);
+
+    function updateState(isPlaying) {
+      if (card) card.classList.toggle("playing", isPlaying);
+      if (icoPlay) icoPlay.style.display = isPlaying ? "none" : "block";
+      if (icoPause) icoPause.style.display = isPlaying ? "block" : "none";
+    }
+
+    function togglePlay() {
+      if (audio.paused) {
+        audio.play().then(function(){ updateState(true); }).catch(function(){});
+      } else {
+        audio.pause();
+        updateState(false);
       }
-      if(++tries>150) clearInterval(timer);
-    },200);
+    }
+
+    fab.addEventListener("click", function(e) {
+      e.stopPropagation();
+      floatWrap.classList.toggle("open");
+    });
+
+    document.addEventListener("click", function(e) {
+      if (floatWrap.classList.contains("open") && !floatWrap.contains(e.target)) {
+        floatWrap.classList.remove("open");
+      }
+    });
+
+    if (playBtn) playBtn.addEventListener("click", togglePlay);
+
+    audio.addEventListener("timeupdate", function() {
+      var d = audio.duration;
+      var c = audio.currentTime;
+      if (d && isFinite(d) && d > 0) {
+        var pct = (c / d) * 100;
+        if (fill) fill.style.width = pct + "%";
+        setRingProgress(c / d);
+        if (curTime) curTime.textContent = formatTime(c);
+        if (durTime) durTime.textContent = formatTime(d);
+      }
+    });
+
+    audio.addEventListener("loadedmetadata", function() {
+      if (durTime) durTime.textContent = formatTime(audio.duration);
+    });
+
+    audio.addEventListener("play", function() { updateState(true); });
+    audio.addEventListener("pause", function() { updateState(false); });
+
+    if (seekBar) {
+      seekBar.addEventListener("click", function(e) {
+        var rect = seekBar.getBoundingClientRect();
+        var pos = (e.clientX - rect.left) / rect.width;
+        if (audio.duration) {
+          audio.currentTime = pos * audio.duration;
+        }
+      });
+    }
+
+    if (volSlider) {
+      audio.volume = parseFloat(volSlider.value) || 0.8;
+      volSlider.addEventListener("input", function() {
+        audio.volume = parseFloat(volSlider.value);
+        if (audio.volume === 0) {
+          if (icoVol) icoVol.style.display = "none";
+          if (icoMuted) icoMuted.style.display = "block";
+        } else {
+          if (icoVol) icoVol.style.display = "block";
+          if (icoMuted) icoMuted.style.display = "none";
+        }
+      });
+    }
+
+    if (muteBtn) {
+      muteBtn.addEventListener("click", function() {
+        audio.muted = !audio.muted;
+        if (audio.muted) {
+          if (icoVol) icoVol.style.display = "none";
+          if (icoMuted) icoMuted.style.display = "block";
+        } else {
+          if (icoVol) icoVol.style.display = "block";
+          if (icoMuted) icoMuted.style.display = "none";
+        }
+      });
+    }
+
+    /* First user click on page automatically starts gentle playback if not started */
+    var hasInteracted = false;
+    function autoStartOnInteraction() {
+      if (hasInteracted) return;
+      hasInteracted = true;
+      audio.play().then(function(){ updateState(true); }).catch(function(){});
+    }
+    document.addEventListener("click", autoStartOnInteraction, { once: true });
+    document.addEventListener("keydown", autoStartOnInteraction, { once: true });
   })();
   </script>
 

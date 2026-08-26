@@ -23,6 +23,10 @@ spec:
         widget, recommended slug: wishes)'
       screenshot: ''
       file: page_wishes.html
+    - name: Projects & Orbit
+      description: 'Showcase portfolio for all projects and sibling websites (recommended slug: projects or links)'
+      screenshot: ''
+      file: links.html
   license:
   - name: MIT
     url: https://github.com/7l4i8y1a4n3g8-7l4i8y1a4n3g8-1438-9748/moesora/blob/master/LICENSE
