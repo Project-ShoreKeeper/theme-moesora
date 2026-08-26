@@ -213,30 +213,48 @@
       });
     }
 
+    function updateVolumeUI() {
+      var isMuted = audio.muted || audio.volume === 0;
+      if (icoVol) icoVol.style.display = isMuted ? "none" : "block";
+      if (icoMuted) icoMuted.style.display = isMuted ? "block" : "none";
+    }
+
+    /* Restore persisted volume and mute state */
+    var savedVol = null;
+    try { savedVol = localStorage.getItem("shorekeeper_player_volume"); } catch(e) {}
+    var initialVol = (savedVol !== null && !isNaN(parseFloat(savedVol))) ? parseFloat(savedVol) : 0.8;
+    audio.volume = Math.max(0, Math.min(1, initialVol));
+    if (volSlider) volSlider.value = audio.volume;
+
+    var savedMuted = null;
+    try { savedMuted = localStorage.getItem("shorekeeper_player_muted"); } catch(e) {}
+    if (savedMuted === "true") {
+      audio.muted = true;
+    }
+    updateVolumeUI();
+
     if (volSlider) {
-      audio.volume = parseFloat(volSlider.value) || 0.8;
       volSlider.addEventListener("input", function() {
-        audio.volume = parseFloat(volSlider.value);
-        if (audio.volume === 0) {
-          if (icoVol) icoVol.style.display = "none";
-          if (icoMuted) icoMuted.style.display = "block";
-        } else {
-          if (icoVol) icoVol.style.display = "block";
-          if (icoMuted) icoMuted.style.display = "none";
+        var val = parseFloat(volSlider.value);
+        audio.volume = isNaN(val) ? 0.8 : Math.max(0, Math.min(1, val));
+        if (audio.volume > 0 && audio.muted) {
+          audio.muted = false;
         }
+        try {
+          localStorage.setItem("shorekeeper_player_volume", String(audio.volume));
+          localStorage.setItem("shorekeeper_player_muted", String(audio.muted));
+        } catch(e) {}
+        updateVolumeUI();
       });
     }
 
     if (muteBtn) {
       muteBtn.addEventListener("click", function() {
         audio.muted = !audio.muted;
-        if (audio.muted) {
-          if (icoVol) icoVol.style.display = "none";
-          if (icoMuted) icoMuted.style.display = "block";
-        } else {
-          if (icoVol) icoVol.style.display = "block";
-          if (icoMuted) icoMuted.style.display = "none";
-        }
+        try {
+          localStorage.setItem("shorekeeper_player_muted", String(audio.muted));
+        } catch(e) {}
+        updateVolumeUI();
       });
     }
 
