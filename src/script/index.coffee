@@ -1051,7 +1051,7 @@ do ->
   makeCanvas = ->
     canvas = document.createElement('canvas')
     canvas.id = 'moe-fx'
-    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:-1'
+    canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0'
     document.body.appendChild canvas
     ctx = canvas.getContext('2d')
     resize()
@@ -1060,31 +1060,31 @@ do ->
 
   spawn = (initial) ->
     if bg == 'universe'
-      isMeteor = Math.random() < 0.07
-      sp = if isMeteor then Math.random() * 3.2 + 2.8 else Math.random() * 1.0 + 0.4
-      angle = 0.68 + (Math.random() - 0.5) * 0.18
+      isMeteor = Math.random() < 0.09
+      sp = if isMeteor then Math.random() * 3.5 + 3.2 else Math.random() * 1.2 + 0.6
+      angle = 0.70 + (Math.random() - 0.5) * 0.20
       vx = -Math.cos(angle) * sp
       vy = Math.sin(angle) * sp
       x = 0
       y = 0
       if initial
-        x = Math.random() * (W + 200) - 50
-        y = Math.random() * (H + 100) - 50
+        x = Math.random() * (W + 250) - 50
+        y = Math.random() * (H + 150) - 50
       else
         if Math.random() < 0.65
-          x = Math.random() * (W + 120)
-          y = -15
+          x = Math.random() * (W + 150)
+          y = -20
         else
-          x = W + 15
-          y = Math.random() * (H * 0.8)
+          x = W + 20
+          y = Math.random() * (H * 0.85)
       return {
         x: x
         y: y
         vx: vx
         vy: vy
         sp: sp
-        r: if isMeteor then Math.random() * 1.2 + 1.2 else Math.random() * 1.2 + 0.4
-        len: if isMeteor then Math.random() * 32 + 18 else Math.random() * 10 + 3
+        r: if isMeteor then Math.random() * 1.5 + 1.5 else Math.random() * 1.6 + 0.8
+        len: if isMeteor then Math.random() * 42 + 22 else Math.random() * 15 + 5
         a: Math.random() * 6.28
         tw: Math.random() * 0.04 + 0.015
         hue: Math.random()
@@ -1102,7 +1102,7 @@ do ->
 
   initParts = ->
     parts = []
-    n = if bg == 'universe' then 100 else 60
+    n = if bg == 'universe' then 120 else 60
     i = 0
     while i < n
       parts.push spawn(true)
@@ -1124,20 +1124,20 @@ do ->
         p.y += p.vy
         p.a += p.tw
         al = (Math.sin(p.a) + 1) / 2
-        opacity = 0.25 + al * 0.75
+        opacity = 0.35 + al * 0.65
         tailX = p.x - (p.vx / p.sp) * p.len
         tailY = p.y - (p.vy / p.sp) * p.len
         ctx.save()
-        if p.len > 5
+        if p.len > 4
           grad = ctx.createLinearGradient(tailX, tailY, p.x, p.y)
           trailColor = if dk
-            (if p.hue < 0.55 then 'rgba(56,189,248,' else 'rgba(192,132,252,')
+            (if p.hue < 0.5 then 'rgba(56,189,248,' else if p.hue < 0.8 then 'rgba(192,132,252,' else 'rgba(255,255,255,')
           else
-            (if p.hue < 0.55 then 'rgba(99,102,241,' else 'rgba(168,85,247,')
+            (if p.hue < 0.5 then 'rgba(14,165,233,' else 'rgba(129,140,248,')
           grad.addColorStop 0, trailColor + '0)'
-          grad.addColorStop 1, trailColor + (opacity * 0.85) + ')'
+          grad.addColorStop 1, trailColor + (opacity * 0.9) + ')'
           ctx.strokeStyle = grad
-          ctx.lineWidth = p.r * 0.9
+          ctx.lineWidth = p.r * 1.1
           ctx.lineCap = 'round'
           ctx.beginPath()
           ctx.moveTo tailX, tailY
@@ -1147,17 +1147,17 @@ do ->
         headColor = if dk
           (if p.hue < 0.4 then 'rgba(255,255,255,' else if p.hue < 0.75 then 'rgba(186,230,253,' else 'rgba(233,213,255,')
         else
-          (if p.hue < 0.4 then 'rgba(99,102,241,' else 'rgba(120,100,190,')
+          (if p.hue < 0.4 then 'rgba(79,70,229,' else 'rgba(14,165,233,')
         ctx.fillStyle = headColor + opacity + ')'
         ctx.arc p.x, p.y, p.r, 0, 6.2832
         ctx.fill()
-        if p.r > 1.2 and opacity > 0.6
+        if p.r > 1.2
           ctx.beginPath()
-          ctx.fillStyle = (if dk then 'rgba(56,189,248,' else 'rgba(129,140,248,') + (opacity * 0.25) + ')'
-          ctx.arc p.x, p.y, p.r * 2.2, 0, 6.2832
+          ctx.fillStyle = (if dk then 'rgba(56,189,248,' else 'rgba(99,102,241,') + (opacity * 0.35) + ')'
+          ctx.arc p.x, p.y, p.r * 2.4, 0, 6.2832
           ctx.fill()
         ctx.restore()
-        if p.x < -40 or p.y > H + 40
+        if p.x < -50 or p.y > H + 50
           parts[i] = spawn(false)
         i++
     else
