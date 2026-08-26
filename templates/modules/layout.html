@@ -252,6 +252,217 @@
   })();
   </script>
 
+  <!-- ===== Shorekeeper Bespoke Cosmic Particle Engine ===== -->
+  <canvas id="shore-cosmos-canvas" class="shore-cosmos-canvas"></canvas>
+  <script>
+  (function(){
+    var canvas = document.getElementById("shore-cosmos-canvas");
+    if (!canvas) return;
+    var ctx = canvas.getContext("2d");
+    var W = 0, H = 0, dpr = 1;
+    var stars = [];
+    var meteors = [];
+    var maxStars = 95;
+    var isRunning = true;
+    var nextMeteorTime = Date.now() + 1200;
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = Math.floor(W * dpr);
+      canvas.height = Math.floor(H * dpr);
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
+
+    function createStar(initial) {
+      var angle = 0.66 + (Math.random() - 0.5) * 0.16; // ~37 degrees diagonal slope (down-left)
+      var isDust = Math.random() < 0.35;
+      var speed = isDust ? (Math.random() * 0.35 + 0.25) : (Math.random() * 1.1 + 0.6);
+      var radius = isDust ? (Math.random() * 0.6 + 0.5) : (Math.random() * 1.2 + 0.9);
+      var trail = isDust ? (Math.random() * 6 + 3) : (Math.random() * 18 + 8);
+      
+      var x, y;
+      if (initial) {
+        x = Math.random() * (W + 200) - 50;
+        y = Math.random() * (H + 100) - 50;
+      } else {
+        if (Math.random() < 0.65) {
+          x = Math.random() * (W + 150);
+          y = -15;
+        } else {
+          x = W + 15;
+          y = Math.random() * (H * 0.85);
+        }
+      }
+
+      return {
+        x: x,
+        y: y,
+        vx: -Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        speed: speed,
+        radius: radius,
+        trail: trail,
+        phase: Math.random() * Math.PI * 2,
+        twinkleSpeed: Math.random() * 0.04 + 0.015,
+        hue: Math.random()
+      };
+    }
+
+    function createMeteor() {
+      var angle = 0.68 + (Math.random() - 0.5) * 0.1;
+      var speed = Math.random() * 3.5 + 4.5;
+      var length = Math.random() * 65 + 50;
+      return {
+        x: Math.random() * (W * 0.8) + (W * 0.25),
+        y: Math.random() * -30 - 10,
+        vx: -Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        speed: speed,
+        length: length,
+        radius: Math.random() * 1.2 + 1.6,
+        life: 1.0,
+        decay: Math.random() * 0.008 + 0.008,
+        hue: Math.random()
+      };
+    }
+
+    function init() {
+      resize();
+      stars = [];
+      for (var i = 0; i < maxStars; i++) {
+        stars.push(createStar(true));
+      }
+    }
+
+    function render() {
+      if (!isRunning) return;
+      ctx.clearRect(0, 0, W, H);
+      var isDark = document.documentElement.classList.contains("dark");
+      var now = Date.now();
+
+      // Check meteor spawn
+      if (now > nextMeteorTime && meteors.length < 2) {
+        meteors.push(createMeteor());
+        nextMeteorTime = now + Math.random() * 4000 + 2500;
+      }
+
+      // 1. Draw Meteors
+      for (var m = meteors.length - 1; m >= 0; m--) {
+        var met = meteors[m];
+        met.x += met.vx;
+        met.y += met.vy;
+        met.life -= met.decay;
+
+        if (met.life <= 0 || met.x < -100 || met.y > H + 100) {
+          meteors.splice(m, 1);
+          continue;
+        }
+
+        var tX = met.x - (met.vx / met.speed) * met.length;
+        var tY = met.y - (met.vy / met.speed) * met.length;
+
+        var mGrad = ctx.createLinearGradient(tX, tY, met.x, met.y);
+        var mColor = isDark
+          ? (met.hue < 0.5 ? "56, 189, 248" : "192, 132, 252")
+          : (met.hue < 0.5 ? "14, 165, 233" : "129, 140, 248");
+
+        mGrad.addColorStop(0, "rgba(" + mColor + ", 0)");
+        mGrad.addColorStop(1, "rgba(" + mColor + ", " + (met.life * 0.9) + ")");
+
+        ctx.save();
+        ctx.strokeStyle = mGrad;
+        ctx.lineWidth = met.radius * 1.5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(tX, tY);
+        ctx.lineTo(met.x, met.y);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.fillStyle = isDark ? "rgba(255, 255, 255, " + met.life + ")" : "rgba(79, 70, 229, " + met.life + ")";
+        ctx.arc(met.x, met.y, met.radius * 1.2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.fillStyle = "rgba(" + mColor + ", " + (met.life * 0.45) + ")";
+        ctx.arc(met.x, met.y, met.radius * 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // 2. Draw Drifting Starlight
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        s.x += s.vx;
+        s.y += s.vy;
+        s.phase += s.twinkleSpeed;
+
+        var pulse = (Math.sin(s.phase) + 1) * 0.5;
+        var opacity = 0.35 + pulse * 0.65;
+
+        var tailX = s.x - (s.vx / s.speed) * s.trail;
+        var tailY = s.y - (s.vy / s.speed) * s.trail;
+
+        ctx.save();
+        if (s.trail > 4) {
+          var grad = ctx.createLinearGradient(tailX, tailY, s.x, s.y);
+          var sColor = isDark
+            ? (s.hue < 0.45 ? "56, 189, 248" : (s.hue < 0.8 ? "192, 132, 252" : "255, 255, 255"))
+            : (s.hue < 0.45 ? "14, 165, 233" : (s.hue < 0.8 ? "99, 102, 241" : "168, 85, 247"));
+
+          grad.addColorStop(0, "rgba(" + sColor + ", 0)");
+          grad.addColorStop(1, "rgba(" + sColor + ", " + (opacity * 0.85) + ")");
+
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = s.radius * 1.1;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(tailX, tailY);
+          ctx.lineTo(s.x, s.y);
+          ctx.stroke();
+        }
+
+        ctx.beginPath();
+        var headColor = isDark
+          ? (s.hue < 0.4 ? "rgba(255, 255, 255," : (s.hue < 0.75 ? "rgba(186, 230, 253," : "rgba(233, 213, 255,"))
+          : (s.hue < 0.4 ? "rgba(79, 70, 229," : "rgba(14, 165, 233,");
+        ctx.fillStyle = headColor + opacity + ")";
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (s.radius > 1.1) {
+          ctx.beginPath();
+          var haloColor = isDark ? "rgba(56, 189, 248," : "rgba(99, 102, 241,";
+          ctx.fillStyle = haloColor + (opacity * 0.3) + ")";
+          ctx.arc(s.x, s.y, s.radius * 2.2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+
+        if (s.x < -30 || s.y > H + 30) {
+          stars[i] = createStar(false);
+        }
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    init();
+    render();
+
+    window.addEventListener("resize", resize, { passive: true });
+    document.addEventListener("visibilitychange", function(){
+      isRunning = !document.hidden;
+      if (isRunning) render();
+    });
+  })();
+  </script>
+
   <!-- 页脚 -->
   <div th:replace="~{modules/footer :: footer}"></div>
 
